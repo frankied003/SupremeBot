@@ -20,16 +20,16 @@ console.log(productsJson);
 }
 
 
-function addItemToCart(){
+function addItemToCart(itemId,styId,size,quantity){
 
         axios.post(
             
-        url="https://www.supremenewyork.com/shop/173091/add.json",
+        url="https://www.supremenewyork.com/shop/" + toString(itemId) + "/add.json",
 
         data = {
-            "st": 26762,
-            "s": 76982,
-            "qty": "1"
+            "st": styId,
+            "s": size,
+            "qty": quantity
             }, 
 
         headers = {
@@ -52,6 +52,6 @@ function addItemToCart(){
     
 
 
-getSupremeProducts();
+//getSupremeProducts();
 
-addItemToCart();
+addItemToCart(173901,26762,76982,"1");

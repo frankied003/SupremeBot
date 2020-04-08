@@ -1,11 +1,15 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const qs = require('qs');
+
+// constants
+const RETRY_DELAY = 1000;
 
 // creating a simple axios session so all cookies are stored throughout the checkout process
 const session = axios.create({
     withCredentials: true,
     headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
     }
   });
 
@@ -18,11 +22,11 @@ const redirectTo = async (redirectLink, delay, successfullMessage, errorMessage)
     while(true){
 
         try{
-            const getRedirect = await session.get(redirectLink);
+            const getRedirect = await session.get(redirectLink, {withCredentials: true});
 
             if(getRedirect.status === 200){
                 console.log(successfullMessage);
-                return getRedirect.data;
+                return getRedirect;
             }
             
             else {
@@ -37,6 +41,33 @@ const redirectTo = async (redirectLink, delay, successfullMessage, errorMessage)
     }
 }
 
+const postTo = async (endpointLink, data, postDelay, successfullMessage, errorMessage) => {
+
+    while(true){
+
+        try{
+            await timer(postDelay);
+
+            const postRequest = await session.post(endpointLink, qs.stringify(data), {withCredentials: true});
+
+            if(postRequest.status === 200){
+                console.log(successfullMessage);
+                return postRequest;
+            }
+            
+            else {
+                console.log(errorMessage)
+                await timer(RETRY_DELAY);
+            }
+        }
+
+        catch(err){
+            console.log(err);
+        }
+    }
+}
+
 module.exports = {
+    postTo: postTo,
     redirectTo: redirectTo
 }

@@ -46,6 +46,7 @@ const addItemToCart = async (itemId, styleId, sizeId) => {
         
     // url="https://www.supremenewyork.com/shop/173091/add.json",
 
+<<<<<<< HEAD
     // let postData = {
     //     "st": 26762,
     //     "s": 76982,
@@ -63,6 +64,19 @@ const addItemToCart = async (itemId, styleId, sizeId) => {
     //     }, (error) => {
     //     console.log(error);
     //     });
+=======
+function addItemToCart(itemId,styId,size,quantity){
+
+        axios.post(
+            
+        url="https://www.supremenewyork.com/shop/" + toString(itemId) + "/add.json",
+
+        data = {
+            "st": styId,
+            "s": size,
+            "qty": quantity
+            }, 
+>>>>>>> d10da7bf0eafaf79825fa47126e06d06eef7248b
 
 }
 
@@ -88,6 +102,12 @@ async function start () {
     await checkout();
 }
 
+<<<<<<< HEAD
 start();
 
 // ADD TO CART WORKS, NEED TO FINISH GETTING CHECKOUT PAGE TO LOAD, NEED TO PASS IN THE PURE_CART COOKIE INTO THE CHECKOUTLINK
+=======
+//getSupremeProducts();
+
+addItemToCart(173901,26762,76982,"1");
+>>>>>>> d10da7bf0eafaf79825fa47126e06d06eef7248b

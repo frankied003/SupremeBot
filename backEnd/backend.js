@@ -19,13 +19,16 @@ const getSupremeProducts = async () => {
         "Error accessing Supreme site, retrying...");
         
     console.log(products.data);
+    return 
 }
+
+// Need to search for products on the backend site above
 
 
 const addItemToCart = async (itemId, styleId, sizeId) => {
 
-    let postUrl = `https://www.supremenewyork.com/shop/${itemId}/add.json`;
-    let postData = {
+    const postUrl = `https://www.supremenewyork.com/shop/${itemId}/add.json`;
+    const postData = {
         "st": styleId,
         "s": sizeId,
         "qty": "1"
@@ -37,40 +40,20 @@ const addItemToCart = async (itemId, styleId, sizeId) => {
         ADD_TO_CART_DELAY,
         "Successfully added item to cart, going to checkout!",
         "Failed to add item to cart, retrying...");
-    
-    console.log(addToCart.headers["set-cookie"][2]); //this return the pure_cart cookie, need to parse it now
-    return(addToCart)
+    console.log(addToCart.headers);
+    let cartCookie = addToCart.headers["set-cookie"][2];
+    cartCookie = cartCookie.split("=")[1].split(";")[0]; // this returns the pure_cart cookie value
+    // console.log(cartCookie); 
 
-
-    // axios.post(
-        
-    // url="https://www.supremenewyork.com/shop/173091/add.json",
-
-    // let postData = {
-    //     "st": 26762,
-    //     "s": 76982,
-    //     "qty": "1"
-    //     }, 
-
-    // headers = {
-    //     'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
-    //     'Content-Type': 'application/x-www-form-urlencoded'
-    //     },
-
-    // )
-    // .then((response) => {
-    //     console.log(response);
-    //     }, (error) => {
-    //     console.log(error);
-    //     });
+    return cartCookie;
 
 }
 
-const checkout = async (pureCartCookie) => {
-    // direct link to the backend of the site
-    let checkoutLink = `https://www.supremenewyork.com/checkout/totals_mobile.js?order%5Bbilling_country%5D=USA&cookie-sub=${pureCartCookie}&order%5Bbilling_state%5D=&order%5Bbilling_zip%5D=&mobile=true`;
+const checkout = async (cookie) => {
+    
+    // const checkoutLink = `https://www.supremenewyork.com/checkout/totals_mobile.js?order%5Bbilling_country%5D=USA&cookie-sub=${cookie}&order%5Bbilling_state%5D=&order%5Bbilling_zip%5D=&mobile=true`;
 
-    // let checkoutLink = "https://www.supremenewyork.com/mobile/#checkout";
+    const checkoutLink = "https://www.supremenewyork.com/mobile/#checkout";
 
     const checkoutData = await helperFunctions.redirectTo(
         checkoutLink, 
@@ -78,14 +61,14 @@ const checkout = async (pureCartCookie) => {
         "Checking out!", 
         "Error accessing checkout page, retrying...");
         
-    console.log(checkoutData.headers);
+    console.log(checkoutData);
 }
 
        
 async function start () {
     await getSupremeProducts();
-    await addItemToCart(173091, 26762, 76982);
-    await checkout();
+    const pureCartCookie = await addItemToCart(173064, 26660, 76664);
+    await checkout(pureCartCookie);
 }
 
 start();

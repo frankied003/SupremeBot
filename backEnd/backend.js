@@ -45,6 +45,7 @@ const productSearch = (products) => {
         
             
     }
+    //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
     console.log(names_and_keys[0])
 
 }

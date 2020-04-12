@@ -1,5 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const lodash = require('lodash')
 
 var helperFunctions = require("./helperFunctions");
 
@@ -25,10 +26,27 @@ const getSupremeProducts = async () => {
 
 const productSearch = (products) => {
 
-console.log("Products List")
-console.log(products)
-
+    var categories = ["Bags", "Accessories", "Skate", "Pants", "Shoes", "Shirts", 'Jackets', "Tops/Sweaters", "Hats", "Sweatshirts", "Jackets", "Shirts"];
+    var names_and_keys = [Bags = [{}], Accessories = [{}], Skate = [{}], Pants = [{}], Shoes = [{}], Shirts = [{}], Jackets = [{}], Tops_Sweaters = [{}], Hats = [{}], Sweatshirts = [{}], Jackets = [{}], Shirts = [{}]];
     
+    
+    for (var i = 0; i< categories.length; i++){
+        
+        for(var x = 0; x < 30; x++)
+        {
+            if(categories[i] == lodash.get(products, `products_and_categories.${categories[i]}[${x}].category_name`))
+            {
+                names_and_keys[i].push({
+                    key: lodash.get(products, `products_and_categories.${categories[i]}[${x}].name`),
+                    value: lodash.get(products, `products_and_categories.${categories[i]}[${x}].id`)
+                })
+            }  
+        }
+        
+            
+    }
+    console.log(names_and_keys[0])
+
 }
 // Need to search for products on the backend site above
 

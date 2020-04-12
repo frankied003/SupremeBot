@@ -18,10 +18,18 @@ const getSupremeProducts = async () => {
         "Successfully connected to backend!", 
         "Error accessing Supreme site, retrying...");
         
-    console.log(products.data);
+    productSearch(products.data)
     return 
 }
 
+
+const productSearch = (products) => {
+
+console.log("Products List")
+console.log(products)
+
+    
+}
 // Need to search for products on the backend site above
 
 

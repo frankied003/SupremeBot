@@ -76,18 +76,66 @@ const addItemToCart = async (itemId, styleId, sizeId) => {
 }
 
 const checkout = async (cookie) => {
+
+    // checkoutPureCartCookie = cookie.split("%").join("%25");
+    // console.log(checkoutPureCartCookie);
     
-    // const checkoutLink = `https://www.supremenewyork.com/checkout/totals_mobile.js?order%5Bbilling_country%5D=USA&cookie-sub=${cookie}&order%5Bbilling_state%5D=&order%5Bbilling_zip%5D=&mobile=true`;
+    // const checkoutLink = `https://www.supremenewyork.com/checkout/totals_mobile.js?order%5Bbilling_country%5D=USA&cookie-sub=${checkoutPureCartCookie}&order%5Bbilling_state%5D=&order%5Bbilling_zip%5D=&mobile=true`;
 
     const checkoutLink = "https://www.supremenewyork.com/mobile/#checkout";
+    const checkoutEndpoint = "https://www.supremenewyork.com/checkout.json";
 
-    const checkoutData = await helperFunctions.redirectTo(
+    // go to the checkout page
+    const checkoutPage = await helperFunctions.redirectTo(
         checkoutLink, 
         RETRY_DELAY, 
         "Checking out!", 
         "Error accessing checkout page, retrying...");
         
-    console.log(checkoutData);
+    console.log(checkoutPage);
+
+    // post checkoutdata
+
+    const now = new Date()  
+    const epochTime = Math.round(now.getTime() / 1000)  
+    
+    const checkoutData = {
+        "store_credit_id": "",
+        "from_mobile": "1",
+        "cookie-sub": cookie,
+        "current_time": epochTime,
+        "same_as_billing_address": "1",
+        "scerkhaj": "CKCRSUJHXH",
+        "order[billing_name]": "",
+        "order[bn]": "Frank DiGiacomo",
+        "order[email]": "frankied3030@gmail.com",
+        "order[tel]": "914-602-6334",
+        "order[billing_address]": "280 Daisy Lane",
+        "order[billing_address_2]": "",
+        "order[billing_zip]": "10512",
+        "order[billing_city]": "Carmel",
+        "order[billing_state]": "NY",
+        "order[billing_country]": "USA",
+        "store_address": "1",
+        "riearmxa": "5108 0501 5256 8833",
+        "credit_card[month]": "05",
+        "credit_card[year]": "2027",
+        "rand": "",
+        "credit_card[meknk]": "123",
+        "order[terms]": "0",
+        "order[terms]": "1",
+        "g-recaptcha-response": "03AHaCkAaqoqmzogniNJqrTxGx0UlmOsavs8hzVQl2eOQghD2ARiTbS26C7ExrZSI6LPaFjwDF-pQ2lh4SuhqQ-UoCmykZllFgHknaqDHXEAweYkDmmsLQ1sNm-bubcC9BhdhPfumoJlhrQo8oUfYXyk6ic0l4ix7B9tpV1lxhyK8kxy-aSqBEhOwDIwltCiMEj1KBkweAA3L88KaQ9jk5AXKfH1tx5SAUem5Z6PtsjSB6lwvNUqorNS7PErqE_kIQI4UKs7tJcJV6N9k6dphAwdzedPEkmA5FfV3pF7vN45scdMXoOKNo4uQXzZ4D3RZ1ux59Ox1VC8rpPXzJ2WK_kb4BSbAmxYkICrpAaHuH9b_FOw7ck0nhHzcpJJhZNUiqYGrCNFEtt6q9eR5CCIZZ56E85MRzikKlGw"
+        }
+
+    const completeCheckout = await helperFunctions.postTo(
+        checkoutEndpoint,
+        checkoutData,
+        CHECKOUT_DELAY,
+        "Sending payment details",
+        "Error sending checkout data"
+    );
+
+    console.log(completeCheckout.data);
 }
 
        

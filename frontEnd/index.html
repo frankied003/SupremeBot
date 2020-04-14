@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
+    <script type= "text/javascript" src="index.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Supreme Bot</title>
 </head>
 <body>
+    <input type="button" onclick="funcClear()" value="Clear"></input>
+    <input type="button" onclick="Test()" value="Test"></input>
     <p> Welcome to Supreme Bot. Please enter your information below:</p>
-    
+
+<form id = "supForm">
     <label>First Name</label>
     <input type = "text"
     id = "Fname"
@@ -401,7 +405,7 @@
 
     <label>CVV</label>
     <input type = "number"
-    id = "Cvv"
+    id = "CVV"
     value = " " 
     size="3"
     required/>
@@ -446,6 +450,46 @@
     <option value="2034">2034</option>
     <option value="2035">2035</option>
 </select>
+
+    <p> </p>
+    <p> </p>
+    <p> </p>
+    <p> </p>
+
+    <label>keyword</label>
+    <input type = "text"
+    id = "kword"
+    value = " " 
+    required/>
+
+    <p> </p>
+
+    <label>Delay (in ms)</label>
+    <input type = "number"
+    id = "delay"
+    value = " " 
+    required/>
+
+    <p> </p>
+
+    <label>Color</label>
+    <select id= "color" name="Color">
+    <option>- Color -</option>
+    <option value="C1">C1</option>
+    <option value="C2">C2</option>
+    <option value="C3">C3</option>
+    <option value="C4">C4</option>
+    </select>
+
+    <label>Size</label>
+    <select id= "size" name="Size">
+    <option>- Size -</option>
+    <option value="S">Small</option>
+    <option value="M">Medium</option>
+    <option value="L">Large</option>
+    <option value="XL">XLarge</option>
+    </select>
+</form>
 
     
 

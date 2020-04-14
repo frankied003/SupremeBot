@@ -1,4 +1,3 @@
-
 function funcClear(){
     document.getElementById("supForm").reset()
 }
@@ -23,4 +22,3 @@ function Test(){
     document.getElementById("color").value= "C2"
     document.getElementById("size").value= "L"
 }
-

@@ -22,10 +22,11 @@ const redirectTo = async (redirectLink, delay, successfullMessage, errorMessage)
     while(true){
 
         try{
-            const getRedirect = await session.get(redirectLink, {withCredentials: true});
+            const getRedirect = await session.get(redirectLink);
 
             if(getRedirect.status === 200){
                 console.log(successfullMessage);
+                await timer(delay);
                 return getRedirect;
             }
             
@@ -48,7 +49,7 @@ const postTo = async (endpointLink, data, postDelay, successfullMessage, errorMe
         try{
             await timer(postDelay);
 
-            const postRequest = await session.post(endpointLink, qs.stringify(data), {withCredentials: true});
+            const postRequest = await session.post(endpointLink, qs.stringify(data));
 
             if(postRequest.status === 200){
                 console.log(successfullMessage);

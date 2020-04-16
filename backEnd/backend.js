@@ -124,7 +124,7 @@ const checkout = async (cookie) => {
         "order[billing_state]": "NY",
         "order[billing_country]": "USA",
         "store_address": "1",
-        "riearmxa": "1234123412341234",
+        "riearmxa": "1234123412341235",
         "credit_card[month]": "05",
         "credit_card[year]": "2027",
         "rand": "",

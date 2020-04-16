@@ -1,12 +1,15 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
-const lodash = require('lodash')
+const lodash = require('lodash');
+const {Harvester} = require('captcha-manager');
 
 var helperFunctions = require("./helperFunctions");
 
 const  RETRY_DELAY = 1000;
 const ADD_TO_CART_DELAY = 2000;
 const CHECKOUT_DELAY = 2500;
+
+// for captcha
+const harvester = new Harvester();
+const siteKey = '6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz';
 
 const getSupremeProducts = async () => {
 
@@ -67,20 +70,21 @@ const addItemToCart = async (itemId, styleId, sizeId) => {
         ADD_TO_CART_DELAY,
         "Successfully added item to cart, going to checkout!",
         "Failed to add item to cart, retrying...");
-    console.log(addToCart.headers);
+        
     let cartCookie = addToCart.headers["set-cookie"][2];
     cartCookie = cartCookie.split("=")[1].split(";")[0]; // this returns the pure_cart cookie value
-    // console.log(cartCookie); 
-
     return cartCookie;
 
+}
+
+const harvest = async () => {
+    return await harvester.getResponse("supremenewyork.com", siteKey);
 }
 
 const checkout = async (cookie) => {
 
     // checkoutPureCartCookie = cookie.split("%").join("%25");
     // console.log(checkoutPureCartCookie);
-    
     // const checkoutLink = `https://www.supremenewyork.com/checkout/totals_mobile.js?order%5Bbilling_country%5D=USA&cookie-sub=${checkoutPureCartCookie}&order%5Bbilling_state%5D=&order%5Bbilling_zip%5D=&mobile=true`;
 
     const checkoutLink = "https://www.supremenewyork.com/mobile/#checkout";
@@ -92,14 +96,16 @@ const checkout = async (cookie) => {
         RETRY_DELAY, 
         "Checking out!", 
         "Error accessing checkout page, retrying...");
-        
-    console.log(checkoutPage);
 
-    // post checkoutdata
+    // get captcha token
+    const captchaToken = await harvest();
+    console.log("Captcha Token: " + captchaToken);
+    console.log("Pure_Cart Cookie: " + cookie);
 
     const now = new Date()  
     const epochTime = Math.round(now.getTime() / 1000)  
     
+    // checkout data
     const checkoutData = {
         "store_credit_id": "",
         "from_mobile": "1",
@@ -113,19 +119,19 @@ const checkout = async (cookie) => {
         "order[tel]": "914-602-6334",
         "order[billing_address]": "123 cool lane",
         "order[billing_address_2]": "",
-        "order[billing_zip]": "1234",
-        "order[billing_city]": "blahh",
+        "order[billing_zip]": "10512",
+        "order[billing_city]": "Carmel",
         "order[billing_state]": "NY",
         "order[billing_country]": "USA",
         "store_address": "1",
-        "riearmxa": "1234123412341234",
+        "riearmxa": "5108050152568833",
         "credit_card[month]": "05",
         "credit_card[year]": "2027",
         "rand": "",
         "credit_card[meknk]": "123",
         "order[terms]": "0",
         "order[terms]": "1",
-        "g-recaptcha-response": "03AHaCkAaqoqmzogniNJqrTxGx0UlmOsavs8hzVQl2eOQghD2ARiTbS26C7ExrZSI6LPaFjwDF-pQ2lh4SuhqQ-UoCmykZllFgHknaqDHXEAweYkDmmsLQ1sNm-bubcC9BhdhPfumoJlhrQo8oUfYXyk6ic0l4ix7B9tpV1lxhyK8kxy-aSqBEhOwDIwltCiMEj1KBkweAA3L88KaQ9jk5AXKfH1tx5SAUem5Z6PtsjSB6lwvNUqorNS7PErqE_kIQI4UKs7tJcJV6N9k6dphAwdzedPEkmA5FfV3pF7vN45scdMXoOKNo4uQXzZ4D3RZ1ux59Ox1VC8rpPXzJ2WK_kb4BSbAmxYkICrpAaHuH9b_FOw7ck0nhHzcpJJhZNUiqYGrCNFEtt6q9eR5CCIZZ56E85MRzikKlGw"
+        "g-recaptcha-response": captchaToken
         }
 
     const completeCheckout = await helperFunctions.postTo(
@@ -137,13 +143,38 @@ const checkout = async (cookie) => {
     );
 
     console.log(completeCheckout.data);
+
+    const slug = completeCheckout.data.slug;
+    return slug;
+}
+
+const checkoutStatus = async (slug) => {
+    const checkoutStatusLink = `https://www.supremenewyork.com/checkout/${slug}/status.json`;
+    let statusComplete = false;
+
+    while(!statusComplete) {
+        const status = await helperFunctions.redirectTo(checkoutStatusLink, 500, "Checking status of payment", "Failed to check status of payment");
+
+        if (status.data.status != "queued"){
+            console.log("Checking status, please wait")
+        }
+        else if(status.data.status == "failed") {
+            console.log("Payment failed or declined");
+            statusComplete = true;
+        }
+        else {
+            console.log("Checkout complete, check your card or email");
+            statusComplete = true;
+        }
+    }
 }
 
        
 async function start () {
     await getSupremeProducts();
     const pureCartCookie = await addItemToCart(173064, 26660, 76664);
-    await checkout(pureCartCookie);
+    const checkoutToken = await checkout(pureCartCookie);
+    await checkoutStatus(checkoutToken);
 }
 
 start();

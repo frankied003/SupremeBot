@@ -1,15 +1,10 @@
 const lodash = require('lodash');
-const {Harvester} = require('captcha-manager');
 
 var helperFunctions = require("./helperFunctions");
 
 const  RETRY_DELAY = 1000;
 const ADD_TO_CART_DELAY = 2000;
 const CHECKOUT_DELAY = 2500;
-
-// for captcha
-const harvester = new Harvester();
-const siteKey = '6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz';
 
 const getSupremeProducts = async () => {
 
@@ -77,10 +72,6 @@ const addItemToCart = async (itemId, styleId, sizeId) => {
 
 }
 
-const harvest = async () => {
-    return await harvester.getResponse("supremenewyork.com", siteKey);
-}
-
 const checkout = async (cookie) => {
 
     // checkoutPureCartCookie = cookie.split("%").join("%25");
@@ -97,9 +88,6 @@ const checkout = async (cookie) => {
         "Checking out!", 
         "Error accessing checkout page, retrying...");
 
-    // get captcha token
-    const captchaToken = await harvest();
-    console.log("Captcha Token: " + captchaToken);
     console.log("Pure_Cart Cookie: " + cookie);
 
     const now = new Date()  
@@ -131,7 +119,7 @@ const checkout = async (cookie) => {
         "credit_card[meknk]": "123",
         "order[terms]": "0",
         "order[terms]": "1",
-        "g-recaptcha-response": captchaToken
+        "g-recaptcha-response": 'captchaToken' 
         }
 
     const completeCheckout = await helperFunctions.postTo(
@@ -182,5 +170,3 @@ async function start () {
 }
 
 start();
-
-// ADD TO CART WORKS, NEED TO FINISH GETTING CHECKOUT PAGE TO LOAD, NEED TO PASS IN THE PURE_CART COOKIE INTO THE CHECKOUTLINK

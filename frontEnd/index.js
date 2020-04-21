@@ -15,11 +15,15 @@ function Test(){
     document.getElementById("Cname").value= "JOHN H SMTIH"
     document.getElementById("Cnumber").value= "1234567890101112"
     document.getElementById("CVV").value= "123"
-    document.getElementById("cardmonth").value= "January"
+    document.getElementById("cardmonth").value= "01"
     document.getElementById("cardyear").value= "2035"
     document.getElementById("category").value= "Jacket"
     document.getElementById("kword").value= "Supreme Jacket"
     document.getElementById("delay").value= "120"
     document.getElementById("color").value= "C2"
     document.getElementById("size").value= "L"
+}
+
+function TestButton(){
+    console.log("hello");
 }

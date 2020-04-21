@@ -153,7 +153,11 @@ const checkoutStatus = async (slug) => {
     let statusComplete = false;
 
     while(!statusComplete) {
-        const status = await helperFunctions.redirectTo(checkoutStatusLink, 500, "Checking status of payment", "Failed to check status of payment");
+        const status = await helperFunctions.redirectTo(
+            checkoutStatusLink, 
+            500, 
+            "Checking status of payment", 
+            "Failed to check status of payment");
 
         if (status.data.status != "queued"){
             console.log("Checking status, please wait")

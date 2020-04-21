@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script type= "text/javascript" src="index.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Supreme Bot</title>
@@ -528,8 +529,12 @@
                         <button id="submitButton" onclick="TestButton()"> Start Task</button>
                     </div>
                     <div class="col-md-6 text-center">
-                        <button id="submitButton" onclick="TestButton()"> Stop </button>
+                        <button id="submitButton" onclick="TestButton()"> Stop Task </button>
                     </div>
+                </div>
+                <div class="row d-flex justify-content-center text-center" style="margin-top: 100px;">
+                    <div class="g-recaptcha" data-sitekey="6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz"></div>
+                    <br/>
                 </div>
             </div>
         </div>

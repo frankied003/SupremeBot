@@ -35,7 +35,11 @@ label, input, option, select {
     -ms-box-sizing:content-box;
     -moz-box-sizing:content-box;
     box-sizing:content-box;
-    -webkit-box-sizing:content-box; 
+    -webkit-box-sizing:content-box;
+}
+
+select{
+    height: 35px;
 }
 
 h3 { 
@@ -57,7 +61,6 @@ h3 {
 button {
     background-color: red;
     color: white;
-    border-radius: 5px;
     padding: 8px 16px;
     text-align: center;
     text-decoration: none;

@@ -27,7 +27,7 @@ const productSearch = (products) => {
     var categories = ["Bags", "Accessories", "Skate", "Pants", "Shoes", "Shirts", 'Jackets', "Tops/Sweaters", "Hats", "Sweatshirts", "Jackets", "Shirts"];
     var names_and_keys = [Bags = [{}], Accessories = [{}], Skate = [{}], Pants = [{}], Shoes = [{}], Shirts = [{}], Jackets = [{}], Tops_Sweaters = [{}], Hats = [{}], Sweatshirts = [{}], Jackets = [{}], Shirts = [{}]];
     
-    
+    //Inserts item name and id into associated category dictionary
     for (var i = 0; i< categories.length; i++){
         
         for(var x = 0; x < 50; x++)
@@ -42,20 +42,45 @@ const productSearch = (products) => {
         }
            
     }
+
     //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
-    var category = 0;
+    var category = 1;
     console.log(names_and_keys[category]);
 
-    test = [];
+    //We want an array of just the names of the products in the category, ie "Backpack", "Shoulder Bag" in Bags category
+    var just_names = [];
     for(var x = 0; x <names_and_keys[category].length; x++){
-    test[x] = Object.values(names_and_keys[category][x])[0];
+    just_names[x] = Object.values(names_and_keys[category][x])[0];
     }
-   
-    test.shift();
+
+    //First array value is empty
+    just_names.shift();
 
     fs = FuzzySet(
-    test, false)
-    console.log(fs.get('Backpack'));
+    just_names, false)
+
+    //Item most similar to keywords - dictionary form with how close keyword is too actual product name
+    var foundItem = fs.get('Boxer Briefs');
+    //console.log(foundItem)
+
+    //If keywords are not accurate enough
+    if(foundItem === null){
+        console.log("Error try new key words");
+        return false;}
+
+    //Item most similar to keywords - just name of item
+    var item = foundItem[0][1];
+        console.log(item);
+
+    // Search for item code 
+    for(var x = 0; x <names_and_keys[category].length; x++){
+        if(item === names_and_keys[category][x].key){
+           var desired_item_id = names_and_keys[category][x].value;
+           break;
+        }
+    }
+    //Desired Item Id - Done
+    console.log(desired_item_id);
 }
 // Need to search for products on the backend site above
 

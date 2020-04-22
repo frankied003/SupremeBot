@@ -20,6 +20,8 @@
     "axios": "^0.19.2",
     "cheerio": "^1.0.0-rc.3",
     "connect": "^3.7.0",
+    "fuzzyset": "0.0.4",
+    "fuzzyset.js": "0.0.91",
     "qs": "^6.9.3",
     "request": "^2.88.2",
     "serve-static": "^1.14.1"

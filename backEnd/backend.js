@@ -1,5 +1,5 @@
 const lodash = require('lodash');
-
+const fuzzyset = require('fuzzyset.js')
 var helperFunctions = require("./helperFunctions");
 
 const  RETRY_DELAY = 1000;
@@ -30,7 +30,7 @@ const productSearch = (products) => {
     
     for (var i = 0; i< categories.length; i++){
         
-        for(var x = 0; x < 30; x++)
+        for(var x = 0; x < 50; x++)
         {
             if(categories[i] == lodash.get(products, `products_and_categories.${categories[i]}[${x}].category_name`))
             {
@@ -40,12 +40,35 @@ const productSearch = (products) => {
                 })
             }  
         }
-        
-            
+           
     }
     //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
     console.log(names_and_keys[0])
-
+    fs = FuzzySet(['Alabama',
+    'Alaska',
+    'Arizona',
+    'Arkansas',
+    'California',
+    'Colorado',
+    'Connecticut',
+    'Delaware',
+    'Florida',
+    'Georgia',
+    'Hawaii',
+    'Idaho',
+    'Illinois',
+    'Indiana',
+    'Iowa',
+    'Kansas',
+    'Kentucky',
+    'Louisiana',
+    'Maine',
+    'Maryland',
+    'Massachusetts',
+    'Michigan',
+    'Minnesota',
+    'Mississippi'], false)
+    console.log(fs.get('cali'));
 }
 // Need to search for products on the backend site above
 

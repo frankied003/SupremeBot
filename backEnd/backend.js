@@ -43,32 +43,19 @@ const productSearch = (products) => {
            
     }
     //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
-    console.log(names_and_keys[0])
-    fs = FuzzySet(['Alabama',
-    'Alaska',
-    'Arizona',
-    'Arkansas',
-    'California',
-    'Colorado',
-    'Connecticut',
-    'Delaware',
-    'Florida',
-    'Georgia',
-    'Hawaii',
-    'Idaho',
-    'Illinois',
-    'Indiana',
-    'Iowa',
-    'Kansas',
-    'Kentucky',
-    'Louisiana',
-    'Maine',
-    'Maryland',
-    'Massachusetts',
-    'Michigan',
-    'Minnesota',
-    'Mississippi'], false)
-    console.log(fs.get('cali'));
+    var category = 0;
+    console.log(names_and_keys[category]);
+
+    test = [];
+    for(var x = 0; x <names_and_keys[category].length; x++){
+    test[x] = Object.values(names_and_keys[category][x])[0];
+    }
+   
+    test.shift();
+
+    fs = FuzzySet(
+    test, false)
+    console.log(fs.get('Backpack'));
 }
 // Need to search for products on the backend site above
 

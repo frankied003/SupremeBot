@@ -7,7 +7,7 @@ function clear(){
     document.getElementById("Zip").value= ""
     document.getElementById("country").value= "- country -"
     document.getElementById("state").value= "- state -"
-    document.getElementById("cardtype").value= "- card type"
+    document.getElementById("cardtype").value= "- card type -"
     document.getElementById("Cname").value= ""
     document.getElementById("Cnumber").value= ""
     document.getElementById("CVV").value= ""

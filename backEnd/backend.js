@@ -9,7 +9,7 @@ const CHECKOUT_DELAY = 2500;
 const getSupremeProducts = async () => {
 
     // direct link to the backend of the site
-    let backendLink = "https://www.supremenewyork.com/mobile_stock.json";
+    let backendLink = "/mobile_stock.json";
 
     const products = await helperFunctions.redirectTo(
         backendLink, 
@@ -44,7 +44,7 @@ const productSearch = (products) => {
     }
 
     //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
-    var category = 1;
+    var category = 5;
     console.log(names_and_keys[category]);
 
     //We want an array of just the names of the products in the category, ie "Backpack", "Shoulder Bag" in Bags category
@@ -60,7 +60,7 @@ const productSearch = (products) => {
     just_names, false)
 
     //Item most similar to keywords - dictionary form with how close keyword is too actual product name
-    var foundItem = fs.get('Boxer Briefs');
+    var foundItem = fs.get('plaid shirt');
     //console.log(foundItem)
 
     //If keywords are not accurate enough
@@ -87,7 +87,7 @@ const productSearch = (products) => {
 
 const addItemToCart = async (itemId, styleId, sizeId) => {
 
-    const postUrl = `https://www.supremenewyork.com/shop/${itemId}/add.json`;
+    const postUrl = `/shop/${itemId}/add.json`;
     const postData = {
         "st": styleId,
         "s": sizeId,
@@ -100,10 +100,12 @@ const addItemToCart = async (itemId, styleId, sizeId) => {
         ADD_TO_CART_DELAY,
         "Successfully added item to cart, going to checkout!",
         "Failed to add item to cart, retrying...");
+    
+    let cookies = addToCart.headers["set-cookie"].join(";");
         
     let cartCookie = addToCart.headers["set-cookie"][2];
     cartCookie = cartCookie.split("=")[1].split(";")[0]; // this returns the pure_cart cookie value
-    return cartCookie;
+    return [cookies, cartCookie];
 
 }
 
@@ -113,8 +115,8 @@ const checkout = async (cookie) => {
     // console.log(checkoutPureCartCookie);
     // const checkoutLink = `https://www.supremenewyork.com/checkout/totals_mobile.js?order%5Bbilling_country%5D=USA&cookie-sub=${checkoutPureCartCookie}&order%5Bbilling_state%5D=&order%5Bbilling_zip%5D=&mobile=true`;
 
-    const checkoutLink = "https://www.supremenewyork.com/mobile/#checkout";
-    const checkoutEndpoint = "https://www.supremenewyork.com/checkout.json";
+    const checkoutLink = "/mobile/#checkout";
+    const checkoutEndpoint = "/checkout.json";
 
     // go to the checkout page
     const checkoutPage = await helperFunctions.redirectTo(
@@ -124,6 +126,7 @@ const checkout = async (cookie) => {
         "Error accessing checkout page, retrying...");
 
     console.log("Pure_Cart Cookie: " + cookie);
+    console.log(checkoutPage);
 
     const now = new Date()  
     const epochTime = Math.round(now.getTime() / 1000)  
@@ -165,14 +168,14 @@ const checkout = async (cookie) => {
         "Error sending checkout data"
     );
 
-    console.log(completeCheckout.data);
+    console.log(completeCheckout);
 
     const slug = completeCheckout.data.slug;
     return slug;
 }
 
 const checkoutStatus = async (slug) => {
-    const checkoutStatusLink = `https://www.supremenewyork.com/checkout/${slug}/status.json`;
+    const checkoutStatusLink = `/checkout/${slug}/status.json`;
     let statusComplete = false;
 
     while(!statusComplete) {
@@ -189,8 +192,12 @@ const checkoutStatus = async (slug) => {
             console.log("Payment failed or declined");
             statusComplete = true;
         }
+        else if(status.data.status == "success") {
+            console.log("Payment completed, check your bank for charge or email!");
+            statusComplete = true;
+        }
         else {
-            console.log("Checkout complete, check your card or email");
+            console.log("Checkout failed, no cookies");
             statusComplete = true;
         }
     }
@@ -199,8 +206,8 @@ const checkoutStatus = async (slug) => {
        
 async function start () {
     await getSupremeProducts();
-    const pureCartCookie = await addItemToCart(173064, 26660, 76664);
-    const checkoutToken = await checkout(pureCartCookie);
+    const cartCookies = await addItemToCart(173064, 26660, 76664);
+    const checkoutToken = await checkout(cartCookies[1]);
     await checkoutStatus(checkoutToken);
 }
 

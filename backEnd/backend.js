@@ -2,7 +2,7 @@ const lodash = require('lodash');
 const fuzzyset = require('fuzzyset.js')
 var helperFunctions = require("./helperFunctions");
 
-const  RETRY_DELAY = 1000;
+const  RETRY_DELAY = 1500;
 const ADD_TO_CART_DELAY = 2000;
 const CHECKOUT_DELAY = 2500;
 
@@ -53,7 +53,7 @@ const productSearch = async (products) => {
 
     //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
     var category = 5;
-    console.log(names_and_keys[category]);
+    // console.log(names_and_keys[category]);
 
     //We want an array of just the names of the products in the category, ie "Backpack", "Shoulder Bag" in Bags category
     var just_names = [];
@@ -95,10 +95,10 @@ const productSearch = async (products) => {
     const itemPage = await helperFunctions.redirectTo(
         itemLink, 
         RETRY_DELAY, 
-        "Successfully connected to Supreme!", 
+        "Successfully connected to product page!", 
         "Error accessing Supreme site, retrying...");
 
-    console.log(itemPage.data);
+    // console.log(itemPage.data);  // this is for the product page parsing for sizes and colors
 }
 
 const addItemToCart = async (itemId, styleId, sizeId) => {
@@ -117,17 +117,22 @@ const addItemToCart = async (itemId, styleId, sizeId) => {
         "Successfully added item to cart, going to checkout!",
         "Failed to add item to cart, retrying...");
     
-    let cookies = addToCart.headers["set-cookie"].join("; ");
-
-    console.log(cookies);
+    let allCookies = addToCart.headers["set-cookie"].join("; ");
         
-    let cartCookie = addToCart.headers["set-cookie"][2];
-    cartCookie = cartCookie.split("=")[1].split(";")[0]; // this returns the pure_cart cookie value
-    return [cookies, cartCookie];
+    let pureCookie = addToCart.headers["set-cookie"][2];
+    pureCookie = pureCookie.split("=")[1].split(";")[0]; // this returns the pure_cart cookie value
+    
+    let ticketCookie = addToCart.headers["set-cookie"][4]; // return the ticket cookie if there is one
+    ticketCookie = ticketCookie.split(";")[0];
+
+    let cartCookie = addToCart.headers["set-cookie"][1]; // return the ticket cookie if there is one
+    cartCookie = cartCookie.split(";")[0];
+    
+    return [allCookies, pureCookie, ticketCookie, cartCookie];
 
 }
 
-const checkout = async (cookie, addToCartCookies) => {
+const checkout = async (cookie, addToCartCookies, ticketCookie, cartCookie) => {
 
     checkoutPureCartCookie = cookie.split("%").join("%25");
     // console.log(checkoutPureCartCookie);
@@ -159,15 +164,13 @@ const checkout = async (cookie, addToCartCookies) => {
             'Connection': 'keep-alive'
         }, 
         RETRY_DELAY, 
-        "Checking out!", 
+        "Sending payment details soon...", 
         "Error accessing checkout page, retrying...");
 
-    console.log("Pure_Cart Cookie: " + cookie);
-    console.log(checkoutPage.data);
-
     let checkoutPageCookies = checkoutPage.headers["set-cookie"].join(";");
-    let checkoutCookies =  checkoutPageCookies + `; lastVisitedFragment=checkout`;
-    console.log(checkoutCookies);
+
+    let checkoutCookies = `${checkoutPageCookies}; lastVisitedFragment=checkout; pure_cart=${cookie}; ${cartCookie};`;
+    console.log("\n" + checkoutCookies);
     
     // checkout data
     const checkoutData = {
@@ -194,7 +197,7 @@ const checkout = async (cookie, addToCartCookies) => {
         "credit_card[meknk]": "224",
         "order[terms]": "0",
         "order[terms]": "1",
-        "g-recaptcha-response": '03AGdBq27Kzp8iIy4PgHRcLIYXUNrWpRCFC6eVGRy43Y-2CVsEtuWmuUYINZkPruu8UeomYX73PEO68rze2mz6aD7tbypV6wgt8CcDzgGExcx5PnLQoirwF3fPfq-P1ELyeJoHSo6ErUQ41mBIAYb0j52DzWIteP4o2J23zskWLcEyjRy_8xCE5MchJT8HphV041tJ7oXnLIM_Bfrcc-IvNzdhs-m3dkjSiMkriXgCeoE_MZdRNYwncYRQzTrB7-nItZwMgrSDYlLrwsLpwFemO75Kti7vxhiRHdSGkEEqxhNd_dO3fmfAZekGkOPQkDjDA5c2LUeYV4GVhe0IpRKazE_jFtTBP20WY6K65h9jkriyCx6VnX9gcq5BMBqbTknMM-VDoYs25kmpbEGjI1CzJmQ50PznKAfdvE-lDket09KCPe5VYRF9ENzQE6dFPvMK0jQvOgabedhK' 
+        "g-recaptcha-response": '03AGdBq26_idUNfE_bzF2mHWFHsAD7vQyjZmwoX16MJPbzx-CrXxaImv8ZuJ6Tb7eFS31d9_I0P2OvcI9e0qNA4notHb1VG1u2Ee2PlUBbwsoh0_Zlrfzu5kRs7Ai9P51XxM0oee-3VbSAQ4qIWVV19TiOETm5GmFBmfF-jQqhroU_BIvX5kdiqnCugdUA_KLXlbRoQ5gfXnhWnrqWJs7EsN5VnH6S3QvWzxy2ex0pLHkvbfc1H7jyo9EkMnjHkXIWWXlxnyuyu2Ywtz6_M0NnqVyHD1mYF0cDxCyBT0pCS1jF6DkcI_TqleCQ5qxJ1znwr9eNSXDYbrEBtExiKdd-2zVCvJbM6kmCjQBwJIG1NCeL0skUb_q5X2fYfiqMjSjRPJRL3Zsxv9HfNtiLb09vffSWkWms5JEmsji-dJ8bOfgW_ozWd3QvoUkCjczVY2cHkqagtoYmMK0f-rswxgnERS8CDLizmK2Huw' 
         }
 
     const completeCheckout = await helperFunctions.postToWithHeaders(
@@ -239,7 +242,7 @@ const checkoutStatus = async (slug) => {
             console.log("Payment failed or declined");
             statusComplete = true;
         }
-        else if(status.data.status == "success") {
+        else if(status.data.status == "paid") {
             console.log("Payment completed, check your bank for charge or email!");
             statusComplete = true;
         }
@@ -254,7 +257,7 @@ const checkoutStatus = async (slug) => {
 async function start () {
     await getSupremeProducts();
     const cartCookies = await addItemToCart(172991, 26366, 75667);
-    const checkoutToken = await checkout(cartCookies[1], cartCookies[0]);
+    const checkoutToken = await checkout(cartCookies[1], cartCookies[0], cartCookies[2], cartCookies[3]);
     await checkoutStatus(checkoutToken);
 }
 

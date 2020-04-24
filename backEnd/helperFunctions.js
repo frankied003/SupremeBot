@@ -5,10 +5,11 @@ const qs = require('qs');
 // constants
 const RETRY_DELAY = 1000;
 
+axios.defaults.withCredentials = true;
+
 // creating a simple axios session so all cookies are stored throughout the checkout process
 const session = axios.create({
     baseURL: `https://www.supremenewyork.com`,
-    withCredentials: true,
     headers: {
         'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
         'x-requested-with': 'XMLHttpRequest',
@@ -28,7 +29,9 @@ const redirectTo = async (redirectLink, delay, successfullMessage, errorMessage)
             const getRedirect = await session.get(redirectLink);
 
             if(getRedirect.status === 200){
-                console.log(successfullMessage);
+                if(successfullMessage != null){
+                    console.log(successfullMessage);
+                }
                 await timer(delay);
                 return getRedirect;
             }
@@ -97,6 +100,7 @@ const postToWithHeaders = async (endpointLink, data, headersToPost, postDelay, s
 
         catch(err){
             console.log(err);
+            await timer(RETRY_DELAY);
         }
     }
 }
@@ -124,6 +128,7 @@ const redirectToWithHeaders = async (redirectLink, headersToPost, delay, success
 
         catch(err){
             console.log(err);
+            await timer(RETRY_DELAY);
         }
     }
 }

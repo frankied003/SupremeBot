@@ -25,17 +25,16 @@ const getSupremeProducts = async () => {
         "Successfully connected to backend!", 
         "Error accessing Supreme site, retrying...");
         
-    productSearch(products.data)
-    return 
+    return products.data;
 }
 
 
 const productSearch = async (products) => {
 
     //Inputs
-    var category = 10;
-    var item_name = "Morph Tee";
-    var color = "Navy";
+    var category = 9;
+    var item_name = "Digital";
+    var color = "Black";
     var size = "Medium";
 
 
@@ -80,7 +79,7 @@ const productSearch = async (products) => {
 
     //Item most similar to keywords - just name of item
     var foundItem_name = foundItem[0][1];
-        console.log(foundItem_name);
+        console.log("Found item: " + foundItem_name);
 
         console.log(names_and_keys[category]);
     // Search for item code 
@@ -116,7 +115,7 @@ const productSearch = async (products) => {
     }
 
     if(colorId === null || sizeId == null){
-        console.log("Wrong Keywords")
+        console.log("Wrong color or size inputed")
         return false
     }
 
@@ -127,9 +126,17 @@ const productSearch = async (products) => {
     //Size ID - Done
     console.log(sizeId);
 
+    const itemDetails = {
+        'itemId': desired_item_id,
+        'styleId': colorId,
+        sizeId
+    };
+
+    return itemDetails;
+
 }
 
-const addItemToCart = async (itemId, styleId, sizeId) => {
+const addItemToCart = async (itemId, sizeId, styleId) => {
 
     const postUrl = `/shop/${itemId}/add.json`;
     const postData = {
@@ -138,29 +145,36 @@ const addItemToCart = async (itemId, styleId, sizeId) => {
         "qty": "1"
     };
 
-    const addToCart = await helperFunctions.postTo(
-        postUrl, 
-        postData, 
-        ADD_TO_CART_DELAY,
-        "Successfully added item to cart, going to checkout!",
-        "Failed to add item to cart, retrying...");
+    while(true){
+
+        const addToCart = await helperFunctions.postTo(
+            postUrl, 
+            postData,
+            ADD_TO_CART_DELAY,
+            "Adding item to cart...",
+            "Failed to add item to cart, retrying...");
     
-    let allCookies = addToCart.headers["set-cookie"].join("; ");
+        if(addToCart.data.length > 0){
+            let allCookies = addToCart.headers["set-cookie"].join("; ");
+                
+            let pureCookie = addToCart.headers["set-cookie"][2];
+            pureCookie = pureCookie.split("=")[1].split(";")[0]; // this returns the pure_cart cookie value
+            
+            // let ticketCookie = addToCart.headers["set-cookie"][4]; // return the ticket cookie if there is one
+            // ticketCookie = ticketCookie.split(";")[0];
         
-    let pureCookie = addToCart.headers["set-cookie"][2];
-    pureCookie = pureCookie.split("=")[1].split(";")[0]; // this returns the pure_cart cookie value
-    
-    let ticketCookie = addToCart.headers["set-cookie"][4]; // return the ticket cookie if there is one
-    ticketCookie = ticketCookie.split(";")[0];
-
-    let cartCookie = addToCart.headers["set-cookie"][1]; // return the ticket cookie if there is one
-    cartCookie = cartCookie.split(";")[0];
-    
-    return [allCookies, pureCookie, ticketCookie, cartCookie];
-
+            // let cartCookie = addToCart.headers["set-cookie"][1]; // return the ticket cookie if there is one
+            // cartCookie = cartCookie.split(";")[0];
+            
+            return [allCookies, pureCookie];
+        }
+        else {
+            console.log("Item is out of stock, retrying...")
+        }
+    }
 }
 
-const checkout = async (cookie, addToCartCookies, ticketCookie, cartCookie) => {
+const checkout = async (cookie, addToCartCookies) => {
 
     checkoutPureCartCookie = cookie.split("%").join("%25");
     // console.log(checkoutPureCartCookie);
@@ -178,27 +192,13 @@ const checkout = async (cookie, addToCartCookies, ticketCookie, cartCookie) => {
     const checkoutPage = await helperFunctions.redirectToWithHeaders(
         checkoutLink,
         {
-            'accept': 'text/html',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'en-US,en;q=0.9',
-            'content-type': 'application/x-www-form-urlencoded',
-            'referer': 'https://www.supremenewyork.com/mobile',
             'cookie': firstCookies,
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-origin',
-            'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
-            'x-requested-with': 'XMLHttpRequest',
-            'Connection': 'keep-alive'
         }, 
         RETRY_DELAY, 
         "Sending payment details soon...", 
         "Error accessing checkout page, retrying...");
 
     let checkoutPageCookies = checkoutPage.headers["set-cookie"].join(";");
-
-    let checkoutCookies = `${checkoutPageCookies}; lastVisitedFragment=checkout; pure_cart=${cookie}; ${cartCookie};`;
-    console.log("\n" + checkoutCookies);
     
     // checkout data
     const checkoutData = {
@@ -209,7 +209,7 @@ const checkout = async (cookie, addToCartCookies, ticketCookie, cartCookie) => {
         "same_as_billing_address": "1",
         "scerkhaj": "CKCRSUJHXH",
         "order[billing_name]": "",
-        "order[bn]": "Testing Cool",
+        "order[bn]": "Jason Pastuzyn",
         "order[email]": "frankied1241242424@gmail.com",
         "order[tel]": "123-123-1234",
         "order[billing_address]": "1242141",
@@ -232,7 +232,7 @@ const checkout = async (cookie, addToCartCookies, ticketCookie, cartCookie) => {
         checkoutEndpoint,
         checkoutData,
         {
-            'cookies': checkoutCookies
+            'cookie': checkoutPageCookies
         },
         CHECKOUT_DELAY,
         "Sent payment details",
@@ -253,20 +253,17 @@ const checkoutStatus = async (slug) => {
     const checkoutStatusLink = `/checkout/${slug}/status.json`;
     let statusComplete = false;
 
+    console.log("Checking status, please wait (slug token: " + slug + ")");
+
     while(!statusComplete) {
 
         const status = await helperFunctions.redirectTo(
             checkoutStatusLink, 
             500, 
-            "Checking status of payment", 
+            null, 
             "Failed to check status of payment");
-        
-        console.log(status.data);
 
-        if (status.data.status == "queued"){
-            console.log("Checking status, please wait");
-        }
-        else if(status.data.status == "failed") {
+        if(status.data.status == "failed") {
             console.log("Payment failed or declined");
             statusComplete = true;
         }
@@ -274,18 +271,15 @@ const checkoutStatus = async (slug) => {
             console.log("Payment completed, check your bank for charge or email!");
             statusComplete = true;
         }
-        else {
-            console.log("Checkout failed");
-            statusComplete = true;
-        }
     }
 }
 
        
 async function start () {
-    await getSupremeProducts();
-    const cartCookies = await addItemToCart(172991, 26366, 75667);
-    const checkoutToken = await checkout(cartCookies[1], cartCookies[0], cartCookies[2], cartCookies[3]);
+    const allProductData = await getSupremeProducts();
+    const productFoundInfo = await productSearch(allProductData);
+    const cartCookies = await addItemToCart(productFoundInfo.itemId, productFoundInfo.sizeId, productFoundInfo.styleId);
+    const checkoutToken = await checkout(cartCookies[1], cartCookies[0]);
     await checkoutStatus(checkoutToken);
 }
 

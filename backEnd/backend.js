@@ -1,5 +1,5 @@
 const lodash = require('lodash');
-const fuzzyset = require('fuzzyset.js')
+const fuzzyset = require('fuzzyset.js');
 var helperFunctions = require("./helperFunctions");
 
 const  RETRY_DELAY = 1500;
@@ -32,6 +32,13 @@ const getSupremeProducts = async () => {
 
 const productSearch = async (products) => {
 
+    //Inputs
+    var category = 10;
+    var item_name = "Morph Tee";
+    var color = "Navy";
+    var size = "Medium";
+
+
     var categories = ["Bags", "Accessories", "Skate", "Pants", "Shoes", "Shirts", 'Jackets', "Tops/Sweaters", "Hats", "Sweatshirts", "T-Shirts"];
     var names_and_keys = [Bags = [{}], Accessories = [{}], Skate = [{}], Pants = [{}], Shoes = [{}], Shirts = [{}], Jackets = [{}], Tops_Sweaters = [{}], Hats = [{}], Sweatshirts = [{}], TShirts = [{}]];
     
@@ -52,7 +59,6 @@ const productSearch = async (products) => {
     }
 
     //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
-    var category = 10;
     // console.log(names_and_keys[category]);
 
     //We want an array of just the names of the products in the category, ie "Backpack", "Shoulder Bag" in Bags category
@@ -63,34 +69,28 @@ const productSearch = async (products) => {
 
     //First array value is empty
     just_names.shift();
-
-    fs = FuzzySet(
-    just_names, false)
-
-    //Item most similar to keywords - dictionary form with how close keyword is too actual product name
-    var foundItem = fs.get('My Bloody Valentine');
-    //console.log(foundItem)
+    fs = FuzzySet(just_names, false);
+    var foundItem = fs.get(item_name);
 
 
     if(foundItem === null){
         console.log("Error try new key words");
-        return false;}
+        return false}
+
 
     //Item most similar to keywords - just name of item
-    var item = foundItem[0][1];
-        console.log(item);
+    var foundItem_name = foundItem[0][1];
+        console.log(foundItem_name);
 
+        console.log(names_and_keys[category]);
     // Search for item code 
     for(var x = 0; x <names_and_keys[category].length; x++){
-        if(item === names_and_keys[category][x].key){
+        if(foundItem_name === names_and_keys[category][x].key){
            var desired_item_id = names_and_keys[category][x].value;
            break;
         }
     }
-    //Desired Item Id - Done
-    console.log(desired_item_id);
-
-
+    
     //For getting colorId and sizeId
     const itemLink = `/shop/${desired_item_id}.json`;
 
@@ -100,13 +100,10 @@ const productSearch = async (products) => {
         "Successfully connected to product page!", 
         "Error accessing Supreme site, retrying...");
 
-    console.log(itemPage.data);  // this is for the product page parsing for sizes and colors
+    //console.log(itemPage.data);  this is for the product page parsing for sizes and colors
 
-    //Desired Color - Input From User
-    var color = "White";
-    var size = "Medium";
 
-    for(var product = 0; product < 10; product++){
+    for(var product = 0; product < Object.keys(itemPage.data.styles).length; product++){
         if(color === lodash.get(itemPage.data, `styles[${product}].name`)){
             var colorId = lodash.get(itemPage.data, `styles[${product}].id`);
 
@@ -123,6 +120,8 @@ const productSearch = async (products) => {
         return false
     }
 
+    //Desired Item Id - Done
+    console.log(desired_item_id);
     //Color ID - Done 
     console.log(colorId);
     //Size ID - Done

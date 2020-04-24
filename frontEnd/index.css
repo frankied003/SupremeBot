@@ -59,13 +59,11 @@ h3 {
 }
 
 button {
-    background-color: red;
-    color: white;
-    padding: 8px 16px;
+    padding: 10px 20px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 16\px;
     margin: 4px 2px;
     transition-duration: 0.4s;
     cursor: pointer;
@@ -79,6 +77,7 @@ button {
     height: 600px;
     margin: 0px 20px;
     background-color: #d6d6d6;
+    resize: none;
 }
 
 button:hover{

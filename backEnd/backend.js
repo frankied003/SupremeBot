@@ -32,8 +32,8 @@ const getSupremeProducts = async () => {
 
 const productSearch = async (products) => {
 
-    var categories = ["Bags", "Accessories", "Skate", "Pants", "Shoes", "Shirts", 'Jackets', "Tops/Sweaters", "Hats", "Sweatshirts", "Jackets", "Shirts"];
-    var names_and_keys = [Bags = [{}], Accessories = [{}], Skate = [{}], Pants = [{}], Shoes = [{}], Shirts = [{}], Jackets = [{}], Tops_Sweaters = [{}], Hats = [{}], Sweatshirts = [{}], Jackets = [{}], Shirts = [{}]];
+    var categories = ["Bags", "Accessories", "Skate", "Pants", "Shoes", "Shirts", 'Jackets', "Tops/Sweaters", "Hats", "Sweatshirts", "T-Shirts"];
+    var names_and_keys = [Bags = [{}], Accessories = [{}], Skate = [{}], Pants = [{}], Shoes = [{}], Shirts = [{}], Jackets = [{}], Tops_Sweaters = [{}], Hats = [{}], Sweatshirts = [{}], TShirts = [{}]];
     
     //Inserts item name and id into associated category dictionary
     for (var i = 0; i< categories.length; i++){
@@ -52,7 +52,7 @@ const productSearch = async (products) => {
     }
 
     //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
-    var category = 5;
+    var category = 10;
     // console.log(names_and_keys[category]);
 
     //We want an array of just the names of the products in the category, ie "Backpack", "Shoulder Bag" in Bags category
@@ -68,10 +68,10 @@ const productSearch = async (products) => {
     just_names, false)
 
     //Item most similar to keywords - dictionary form with how close keyword is too actual product name
-    var foundItem = fs.get('plaid shirt');
+    var foundItem = fs.get('My Bloody Valentine');
     //console.log(foundItem)
 
-    //If keywords are not accurate enough
+
     if(foundItem === null){
         console.log("Error try new key words");
         return false;}
@@ -90,7 +90,9 @@ const productSearch = async (products) => {
     //Desired Item Id - Done
     console.log(desired_item_id);
 
-    const itemLink = `/shop/173099.json`;
+
+    //For getting colorId and sizeId
+    const itemLink = `/shop/${desired_item_id}.json`;
 
     const itemPage = await helperFunctions.redirectTo(
         itemLink, 
@@ -98,7 +100,34 @@ const productSearch = async (products) => {
         "Successfully connected to product page!", 
         "Error accessing Supreme site, retrying...");
 
-    // console.log(itemPage.data);  // this is for the product page parsing for sizes and colors
+    console.log(itemPage.data);  // this is for the product page parsing for sizes and colors
+
+    //Desired Color - Input From User
+    var color = "White";
+    var size = "Medium";
+
+    for(var product = 0; product < 10; product++){
+        if(color === lodash.get(itemPage.data, `styles[${product}].name`)){
+            var colorId = lodash.get(itemPage.data, `styles[${product}].id`);
+
+            for(var product_size = 0; product_size < 4; product_size++){
+                if(size === lodash.get(itemPage.data, `styles[${product}].sizes[${product_size}].name`)){
+                    var sizeId = lodash.get(itemPage.data, `styles[${product}].sizes[${product_size}].id`);
+                }
+            }
+        }
+    }
+
+    if(colorId === null || sizeId == null){
+        console.log("Wrong Keywords")
+        return false
+    }
+
+    //Color ID - Done 
+    console.log(colorId);
+    //Size ID - Done
+    console.log(sizeId);
+
 }
 
 const addItemToCart = async (itemId, styleId, sizeId) => {

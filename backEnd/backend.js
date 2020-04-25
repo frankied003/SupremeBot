@@ -29,7 +29,7 @@ const getSupremeProducts = async () => {
 }
 
 
-const productSearch = async (products, category, item_name, color, size) => {
+const productSearch = async (products, category, item_name, color, size, firstItem) => {
 
     var categories = ["Bags", "Accessories", "Skate", "Pants", "Shoes", "Shirts", 'Jackets', "Tops/Sweaters", "Hats", "Sweatshirts", "T-Shirts"];
     var names_and_keys = [Bags = [{}], Accessories = [{}], Skate = [{}], Pants = [{}], Shoes = [{}], Shirts = [{}], Jackets = [{}], Tops_Sweaters = [{}], Hats = [{}], Sweatshirts = [{}], TShirts = [{}]];
@@ -37,7 +37,7 @@ const productSearch = async (products, category, item_name, color, size) => {
     //Inserts item name and id into associated category dictionary
     for (var i = 0; i< categories.length; i++){
         
-        for(var x = 0; x < 50; x++)
+        for(var x = 0; x < Object.keys(products.products_and_categories).length; x++) //changed limit from 50 runtime should be better
         {
             if(categories[i] == lodash.get(products, `products_and_categories.${categories[i]}[${x}].category_name`))
             {
@@ -49,7 +49,6 @@ const productSearch = async (products, category, item_name, color, size) => {
         }
            
     }
-
     //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
     // console.log(names_and_keys[category]);
 
@@ -66,15 +65,14 @@ const productSearch = async (products, category, item_name, color, size) => {
 
 
     if(foundItem === null){
-        console.log("Error try new key words");
-        return false}
+        throw new Error("Wrong Keywords for item");}
 
 
     //Item most similar to keywords - just name of item
     var foundItem_name = foundItem[0][1];
         console.log("Found item: " + foundItem_name);
 
-        console.log(names_and_keys[category]);
+
     // Search for item code 
     for(var x = 0; x <names_and_keys[category].length; x++){
         if(foundItem_name === names_and_keys[category][x].key){
@@ -94,6 +92,25 @@ const productSearch = async (products, category, item_name, color, size) => {
 
     //console.log(itemPage.data);  this is for the product page parsing for sizes and colors
 
+    //For finding first colorway and size
+    if (firstItem) {
+        
+        //First Colorway
+        var colorId = lodash.get(itemPage.data, `styles[0].id`);
+        console.log(colorId);
+        //First Size
+        var sizeId = lodash.get(itemPage.data, `styles[0].sizes[0].id`)
+        console.log(sizeId);
+
+        const itemDetails = {
+            'itemId': desired_item_id,
+            'styleId': colorId,
+            sizeId
+        };
+    
+        return itemDetails;
+    }
+        
 
     for(var product = 0; product < Object.keys(itemPage.data.styles).length; product++){
         if(color === lodash.get(itemPage.data, `styles[${product}].name`)){
@@ -108,8 +125,8 @@ const productSearch = async (products, category, item_name, color, size) => {
     }
 
     if(colorId === null || sizeId == null){
-        console.log("Wrong color or size inputed")
-        return false
+        throw new Error("Wrong Color Keywords or Size Input");
+
     }
 
     //Desired Item Id - Done
@@ -269,7 +286,7 @@ const checkoutStatus = async (slug) => {
        
 async function start () {
     const allProducts = await getSupremeProducts();
-    const productFoundInfo = await productSearch(allProducts, 1, "socks", "Red", "N/A");
+    const productFoundInfo = await productSearch(allProducts, 10, "Morph Tee", "White", "Medium", true);
     const cartCookies = await addItemToCart(productFoundInfo.itemId, productFoundInfo.sizeId, productFoundInfo.styleId);
     const checkoutToken = await checkout(cartCookies[1], cartCookies[0]);
     await checkoutStatus(checkoutToken);

@@ -162,10 +162,10 @@ const productSearch = async (products, category, item_name, color, size) => {
 
   let checkoutButtonVisible = await isElementVisible(page, '#checkout-now');
   while (!checkoutButtonVisible) {
-    await page.click('#cart-update > span');
     checkoutButtonVisible = await isElementVisible(page, '#checkout-now');
+    await page.click('#cart-update > span');
   }
-
+  
   // click checkout now
   await page.click('#checkout-now');
   console.log("Added to cart, going to checkout...");

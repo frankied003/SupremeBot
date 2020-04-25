@@ -29,14 +29,7 @@ const getSupremeProducts = async () => {
 }
 
 
-const productSearch = async (products) => {
-
-    //Inputs
-    var category = 9;
-    var item_name = "Digital";
-    var color = "Black";
-    var size = "Medium";
-
+const productSearch = async (products, category, item_name, color, size) => {
 
     var categories = ["Bags", "Accessories", "Skate", "Pants", "Shoes", "Shirts", 'Jackets', "Tops/Sweaters", "Hats", "Sweatshirts", "T-Shirts"];
     var names_and_keys = [Bags = [{}], Accessories = [{}], Skate = [{}], Pants = [{}], Shoes = [{}], Shirts = [{}], Jackets = [{}], Tops_Sweaters = [{}], Hats = [{}], Sweatshirts = [{}], TShirts = [{}]];
@@ -133,7 +126,6 @@ const productSearch = async (products) => {
     };
 
     return itemDetails;
-
 }
 
 const addItemToCart = async (itemId, sizeId, styleId) => {
@@ -276,8 +268,8 @@ const checkoutStatus = async (slug) => {
 
        
 async function start () {
-    const allProductData = await getSupremeProducts();
-    const productFoundInfo = await productSearch(allProductData);
+    const allProducts = await getSupremeProducts();
+    const productFoundInfo = await productSearch(allProducts, 1, "socks", "Red", "N/A");
     const cartCookies = await addItemToCart(productFoundInfo.itemId, productFoundInfo.sizeId, productFoundInfo.styleId);
     const checkoutToken = await checkout(cartCookies[1], cartCookies[0]);
     await checkoutStatus(checkoutToken);

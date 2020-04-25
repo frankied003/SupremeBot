@@ -22,6 +22,7 @@
     "connect": "^3.7.0",
     "fuzzyset": "0.0.4",
     "fuzzyset.js": "0.0.91",
+    "puppeteer": "^3.0.1",
     "qs": "^6.9.3",
     "request": "^2.88.2",
     "serve-static": "^1.14.1"

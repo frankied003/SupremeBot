@@ -228,7 +228,7 @@ const isElementVisible = async (page, selector) => {
   await page.$eval('#g-recaptcha-response', el => el.value = `ff432r32x3rcc4r3r243rc4r43r234r`);
   await new Promise(function(resolve) {setTimeout(resolve, RETRY_DELAY)});
   await page.click("#submit_button");
-  await new Promise(function(resolve) {setTimeout(resolve, 1500)}); // let payment processing page load before checking
+  await page.waitForSelector('#checkout-loading-message > span > span'); // let payment processing page load before checking
 
   // var data = await page._client.send('Network.getAllCookies');
   // console.log(data);

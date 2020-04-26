@@ -28,7 +28,7 @@ const getSupremeProducts = async () => {
 }
 
 
-const productSearch = async (products, category, item_name, color, size) => {
+const productSearch = async (products, category, item_name, color, size, firstItem) => {
 
   var categories = ["Bags", "Accessories", "Skate", "Pants", "Shoes", "Shirts", 'Jackets', "Tops/Sweaters", "Hats", "Sweatshirts", "T-Shirts"];
   var names_and_keys = [Bags = [{}], Accessories = [{}], Skate = [{}], Pants = [{}], Shoes = [{}], Shirts = [{}], Jackets = [{}], Tops_Sweaters = [{}], Hats = [{}], Sweatshirts = [{}], TShirts = [{}]];
@@ -36,7 +36,7 @@ const productSearch = async (products, category, item_name, color, size) => {
   //Inserts item name and id into associated category dictionary
   for (var i = 0; i< categories.length; i++){
       
-      for(var x = 0; x < 50; x++)
+      for(var x = 0; x < Object.keys(products.products_and_categories).length; x++) //changed limit from 50 runtime should be better
       {
           if(categories[i] == lodash.get(products, `products_and_categories.${categories[i]}[${x}].category_name`))
           {
@@ -48,7 +48,6 @@ const productSearch = async (products, category, item_name, color, size) => {
       }
          
   }
-
   //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
   // console.log(names_and_keys[category]);
 
@@ -65,15 +64,14 @@ const productSearch = async (products, category, item_name, color, size) => {
 
 
   if(foundItem === null){
-      console.log("Error try new key words");
-      return false}
+      throw new Error("Wrong Keywords for item");}
 
 
   //Item most similar to keywords - just name of item
   var foundItem_name = foundItem[0][1];
       console.log("Found item: " + foundItem_name);
 
-      console.log(names_and_keys[category]);
+
   // Search for item code 
   for(var x = 0; x <names_and_keys[category].length; x++){
       if(foundItem_name === names_and_keys[category][x].key){
@@ -93,6 +91,25 @@ const productSearch = async (products, category, item_name, color, size) => {
 
   //console.log(itemPage.data);  this is for the product page parsing for sizes and colors
 
+  //For finding first colorway and size
+  if (firstItem) {
+      
+      //First Colorway
+      var colorId = lodash.get(itemPage.data, `styles[0].id`);
+      console.log(colorId);
+      //First Size
+      var sizeId = lodash.get(itemPage.data, `styles[0].sizes[0].id`)
+      console.log(sizeId);
+
+      const itemDetails = {
+          'itemId': desired_item_id,
+          'styleId': colorId,
+          sizeId
+      };
+  
+      return itemDetails;
+  }
+      
 
   for(var product = 0; product < Object.keys(itemPage.data.styles).length; product++){
       if(color === lodash.get(itemPage.data, `styles[${product}].name`)){
@@ -107,8 +124,8 @@ const productSearch = async (products, category, item_name, color, size) => {
   }
 
   if(colorId === null || sizeId == null){
-      console.log("Wrong color or size inputed")
-      return false
+      throw new Error("Wrong Color Keywords or Size Input");
+
   }
 
   //Desired Item Id - Done
@@ -127,9 +144,19 @@ const productSearch = async (products, category, item_name, color, size) => {
   return itemDetails;
 }
 
+const isElementVisible = async (page, selector) => {
+  let visible = true;
+  await page
+    .waitForSelector(selector, { visible: true, timeout: 50 })
+    .catch(() => {
+      visible = false;
+    });
+  return visible;
+};
+
 (async () => {
   const allProducts = await getSupremeProducts();
-  const productFoundInfo = await productSearch(allProducts, 1, "socks", "Red", "N/A");
+  const productFoundInfo = await productSearch(allProducts, 1, "beaded", "Red", "N/A", true);
 
   const itemId = productFoundInfo.itemId;
   const styleId = productFoundInfo.styleId;
@@ -150,24 +177,29 @@ const productSearch = async (products, category, item_name, color, size) => {
 
   await page.waitForSelector('.cart-button');
 
-  const isElementVisible = async (page, selector) => {
-    let visible = true;
-    await page
-      .waitForSelector(selector, { visible: true, timeout: 50 })
-      .catch(() => {
-        visible = false;
-      });
-    return visible;
-  };
+  const checkSoldOut = async () => {
+    let addToCartElement = await page.$('#cart-update > span');
+    const innerText = await page.evaluate(element => element.textContent, addToCartElement);
+    var soldOut = innerText.includes('sold out');
+    return soldOut
+  }
+
+  let soldOutPresent = await checkSoldOut(); // returns true or false
+  while(soldOutPresent){
+    await new Promise(function(resolve) {setTimeout(resolve, RETRY_DELAY)});
+    soldOutPresent = await checkSoldOut();
+    await page.reload();
+    console.log('sold out, retrying...')
+  }
+
+  await page.click('#cart-update > span'); // if its not sold out, click add to cart
 
   let checkoutButtonVisible = await isElementVisible(page, '#checkout-now');
   while (!checkoutButtonVisible) {
     checkoutButtonVisible = await isElementVisible(page, '#checkout-now');
-    await page.click('#cart-update > span');
   }
   
-  // click checkout now
-  await page.click('#checkout-now');
+  await page.click('#checkout-now'); // click checkout now after adding to cart is done
   console.log("Added to cart, going to checkout...");
 
   // waits for form to load
@@ -177,7 +209,6 @@ const productSearch = async (products, category, item_name, color, size) => {
   }
 
   console.log("Checkout loaded, filling payment...");
-
   
   // filling in billing
   await page.$eval('#order_bn', el => el.value = `Frank DiGiacomo`);
@@ -189,26 +220,28 @@ const productSearch = async (products, category, item_name, color, size) => {
   await page.$eval('#order_billing_city', el => el.value = `blah`);
   await page.select('#order_billing_state', `NY`);
   await page.select('#order_billing_country', 'USA');
-  await page.$eval('#cnid', el => el.value = `1234123412341234`);
+  await page.$eval('#cnid', el => el.value = `4941605903969210`); // this is a prepaid card with like 30 cents on it
   await page.select('#credit_card_month', `04`);
   await page.select('#credit_card_year', `2025`);
   await page.$eval('#vvv-container > input[type=tel]', el => el.value = `123`);
   await page.click("#order_terms");
   await page.$eval('#g-recaptcha-response', el => el.value = `ff432r32x3rcc4r3r243rc4r43r234r`);
-  // await page.click("#submit_button");
+  await new Promise(function(resolve) {setTimeout(resolve, RETRY_DELAY)});
+  await page.click("#submit_button");
+  await new Promise(function(resolve) {setTimeout(resolve, 1500)}); // let payment processing page load before checking
 
   // var data = await page._client.send('Network.getAllCookies');
   // console.log(data);
 
   // waits for payment to go through
-
-  let checkoutProcessingVisible = await isElementVisible(page, '#checkout-loading-message');
-  console.log("Payment processing, please wait...")
+  let checkoutProcessingVisible = await isElementVisible(page, '#checkout-loading-message > span > span');
+  console.log("Payment processing, please wait...");
   while (checkoutProcessingVisible) {
-    checkoutProcessingVisible = await isElementVisible(page, '#checkout-loading-message');
+    await new Promise(function(resolve) {setTimeout(resolve, 1000)});
+    checkoutProcessingVisible = await isElementVisible(page, '#checkout-loading-message > span > span');
   }
 
-  const paymentFailed = await isElementVisible(page, '#charge-error');
+  const paymentFailed = page.url().includes("chargeError"); // check if payment failed and returns true or false
 
   if(paymentFailed){
     console.log("Payment declined");

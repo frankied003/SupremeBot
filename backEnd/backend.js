@@ -286,7 +286,7 @@ const checkoutStatus = async (slug) => {
        
 async function start () {
     const allProducts = await getSupremeProducts();
-    const productFoundInfo = await productSearch(allProducts, 10, "Morph Tee", "White", "Medium", true);
+    const productFoundInfo = await productSearch(allProducts, 1, "beaded", "White", "N/A", true);
     const cartCookies = await addItemToCart(productFoundInfo.itemId, productFoundInfo.sizeId, productFoundInfo.styleId);
     const checkoutToken = await checkout(cartCookies[1], cartCookies[0]);
     await checkoutStatus(checkoutToken);

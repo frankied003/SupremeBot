@@ -3,6 +3,14 @@
 const lodash = require('lodash');
 const fuzzyset = require('fuzzyset.js');
 var helperFunctions = require("./helperFunctions");
+// var frontendInputs = require('../frontEnd/index');
+
+// const inputs = frontendInputs.getInputValues();
+// const DELAY = inputs.delay;
+// const categoryNum = inputs.categoryNum;
+// const keywordsList = inputs.keyWords;
+// const itemColor = inputs.color;
+// const itemSize = inputs.size;
 
 const DELAY = 1500;
 
@@ -29,7 +37,7 @@ const getSupremeProducts = async () => {
 }
 
 
-const productSearch = async (products, category, item_name, color, size, firstItem) => {
+const productSearch = async (products, category, item_name, color, size) => {
 
     var categories = ["Bags", "Accessories", "Skate", "Pants", "Shoes", "Shirts", 'Jackets', "Tops/Sweaters", "Hats", "Sweatshirts", "T-Shirts"];
     var names_and_keys = [Bags = [{}], Accessories = [{}], Skate = [{}], Pants = [{}], Shoes = [{}], Shirts = [{}], Jackets = [{}], Tops_Sweaters = [{}], Hats = [{}], Sweatshirts = [{}], TShirts = [{}]];
@@ -92,15 +100,20 @@ const productSearch = async (products, category, item_name, color, size, firstIt
 
     //console.log(itemPage.data);  this is for the product page parsing for sizes and colors
 
-    //For finding first colorway and size
-    if (firstItem) {
+    if(color === "random" && size === "random") {
         
         //First Colorway
         var colorId = lodash.get(itemPage.data, `styles[0].id`);
-        console.log(colorId);
+
         //First Size
         var sizeId = lodash.get(itemPage.data, `styles[0].sizes[0].id`)
-        console.log(sizeId);
+
+        //Desired Item Id - Done
+        console.log("Item ID: " + desired_item_id);
+        //Color ID - Done 
+        console.log("Style ID: " + colorId);
+        //Size ID - Done
+        console.log("Size ID: " + sizeId);
 
         const itemDetails = {
             'itemId': desired_item_id,
@@ -110,30 +123,57 @@ const productSearch = async (products, category, item_name, color, size, firstIt
     
         return itemDetails;
     }
-        
 
-    for(var product = 0; product < Object.keys(itemPage.data.styles).length; product++){
-        if(color === lodash.get(itemPage.data, `styles[${product}].name`)){
-            var colorId = lodash.get(itemPage.data, `styles[${product}].id`);
+    else if(color === "random"){
+        //First Colorway
+        var colorId = lodash.get(itemPage.data, `styles[0].id`);
 
+        for(var product = 0; product < Object.keys(itemPage.data.styles).length; product++){
             for(var product_size = 0; product_size < 4; product_size++){
-                if(size === lodash.get(itemPage.data, `styles[${product}].sizes[${product_size}].name`)){
-                    var sizeId = lodash.get(itemPage.data, `styles[${product}].sizes[${product_size}].id`);
+                if(size === lodash.get(itemPage.data, `styles[0].sizes[${product_size}].name`)){
+                    var sizeId = lodash.get(itemPage.data, `styles[0].sizes[${product_size}].id`);
                 }
             }
         }
     }
 
-    if(colorId === null || sizeId == null){
-        throw new Error("No size or color found, retrying...");
+    else if(size === "random"){
+
+        for(var product = 0; product < Object.keys(itemPage.data.styles).length; product++){
+            if(color === lodash.get(itemPage.data, `styles[${product}].name`)){
+                var colorId = lodash.get(itemPage.data, `styles[${product}].id`);
+                var sizeId = lodash.get(itemPage.data, `styles[${product}].sizes[0].id`)
+            }
+        }
+    }
+
+    else {
+        for(var product = 0; product < Object.keys(itemPage.data.styles).length; product++){
+            if(color === lodash.get(itemPage.data, `styles[${product}].name`)){
+                var colorId = lodash.get(itemPage.data, `styles[${product}].id`);
+    
+                for(var product_size = 0; product_size < 4; product_size++){
+                    if(size === lodash.get(itemPage.data, `styles[${product}].sizes[${product_size}].name`)){
+                        var sizeId = lodash.get(itemPage.data, `styles[${product}].sizes[${product_size}].id`);
+                    }
+                }
+            }
+        }
+    }
+
+    if(colorId === null){
+        throw new Error("No color found, exiting proccess");
+    }
+    else if(sizeId === null){
+        throw new Error("No size found, exiting proccess");
     }
 
     //Desired Item Id - Done
-    console.log(desired_item_id);
+    console.log("Item ID: " + desired_item_id);
     //Color ID - Done 
-    console.log(colorId);
+    console.log("Style ID: " + colorId);
     //Size ID - Done
-    console.log(sizeId);
+    console.log("Size ID: " + sizeId);
 
     const itemDetails = {
         'itemId': desired_item_id,

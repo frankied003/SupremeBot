@@ -44,6 +44,43 @@ function getInputValues(){
     let color = document.getElementById("color").value;
     let size = document.getElementById("size").value;
 
+    let categoryNum;
+    switch (category) {
+        case "bags":
+            categoryNum = 0;
+            break;
+        case "accessories":
+            categoryNum = 1;
+            break;
+        case "skate":
+            categoryNum = 2;
+            break;
+        case "pants":
+            categoryNum = 3;
+            break;
+        case "shoes":
+            categoryNum = 4;
+            break;
+        case "shirts":
+            categoryNum = 5;
+            break;
+        case "jackets":
+            categoryNum = 6;
+            break;
+        case "tops":
+            categoryNum = 7;
+            break;
+        case "hats":
+            categoryNum = 8;
+            break;
+        case "sweatshirts":
+            categoryNum = 9;
+            break;
+        case "t-shirts":
+            categoryNum = 10;
+            break;
+      }
+
     return inputDict = {
         firstName,
         lastName,
@@ -59,7 +96,7 @@ function getInputValues(){
         cvv,
         cardMonth,
         cardYear,
-        category,
+        categoryNum,
         keyWords,
         delay,
         color,
@@ -89,8 +126,15 @@ function test(){
     document.getElementById("size").value= "L"
 }
 
-function TestButton(){
-    console.log("hello");
+function startBot(){
+    let botOption = document.getElementsByClassName("bot-option")[0];
+    if (botOption.value === "safe"){
+        safeBackendScript.startSafeBot();
+    }
+    else {
+        backendScript.startFastBot();
+    }
+    
 }
 
 function updateTaskStatus(message){

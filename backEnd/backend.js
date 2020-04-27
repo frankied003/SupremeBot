@@ -142,14 +142,14 @@ const checkoutStatus = async (slug) => {
 }
 
        
-async function start () {
+async function startFastBot () {
     let itemFound = false;
     let productFoundInfo;
 
     // if item is not found rerun
     while(!itemFound){
         const allProducts = await productSearch.getSupremeProducts();
-        productFoundInfo = await productSearch.productSearch(allProducts, 1, "beaded", "White", "N/A", true);
+        productFoundInfo = await productSearch.productSearch(allProducts, 1, "beaded", "Black", "random");
         if(productFoundInfo !== null){
             itemFound = true;
         }
@@ -159,5 +159,3 @@ async function start () {
     const checkoutToken = await checkout(cartCookies[1], cartCookies[0]);
     await checkoutStatus(checkoutToken);
 }
-
-start();

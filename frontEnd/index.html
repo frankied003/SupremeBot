@@ -226,16 +226,17 @@
                         <label>category</label>
                         <select id= "category" name="Category">
                         <option>- category -</option>
-                        <option value="Acc">accessories</option>
-                        <option value="Bag">bags</option>
-                        <option value="Hat">hats</option>
-                        <option value="Jacket">jackets</option>
-                        <option value="Pants">pants</option>
-                        <option value="Shirt">shirts</option>
-                        <option value="Shoe">shoes</option>
-                        <option value="Skate">skate</option>
-                        <option value="Sweat">sweatshirts</option>
-                        <option value="Tops">tops/sweaters</option>
+                        <option value="bags">bags</option>
+                        <option value="accessories">accessories</option>
+                        <option value="skate">skate</option>
+                        <option value="pants">pants</option>
+                        <option value="shoes">shoes</option>
+                        <option value="shirts">shirts</option>
+                        <option value="jackets">jackets</option>
+                        <option value="tops">tops/sweaters</option>
+                        <option value="hats">hats</option>
+                        <option value="sweatshirts">sweatshirts</option>
+                        <option value="t-shirts">t-shirts</option>
                         </select>
                     </div>
                     <div class="col-md-6 text-center">
@@ -275,14 +276,14 @@
                 </div>
                 <div class="row d-flex justify-content-center text-center">
                     <div class="col-md-6 text-center">
-                        <button id="submitButton" onclick="TestButton()"> start task</button>
+                        <button id="submitButton" onclick="startBot()"> start task</button>
                     </div>
                     <div class="col-md-6 text-center">
                         <button id="submitButton" onclick="TestButton()"> stop task </button>
                     </div>
                 </div>
                 <div class="row d-flex justify-content-center text-center" style="margin: 10%;">
-                    <select class="custom-select">
+                    <select class="custom-select bot-option">
                         <option selected value="fast">fast mode</option>
                         <option value="safe">safe mode (human mode)</option>
                     </select>

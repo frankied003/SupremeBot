@@ -1,5 +1,10 @@
 const puppeteer = require('puppeteer');
 var productSearch = require('./productSearch');
+// var frontendInputs = require('../frontEnd/index');
+
+// const inputs = frontendInputs.getInputValues();
+// const DELAY = inputs.delay;
+// const category = inputs.categoryNum;
 
 const DELAY = 500;
 
@@ -26,7 +31,7 @@ const generateSupremeBrowser = async (page) => {
     let productFoundInfo;
     while(!itemFound){
         const allProducts = await productSearch.getSupremeProducts();
-        productFoundInfo = await productSearch.productSearch(allProducts, 1, "beaded", "White", "N/A", true);
+        productFoundInfo = await productSearch.productSearch(allProducts, 1, "beaded", "Black", "N/A");
         if(productFoundInfo !== null){
             itemFound = true;
         }
@@ -130,7 +135,7 @@ const processPayment = async (page) => {
 async function startSafeBot () {
 
   const browser = await puppeteer.launch({ 
-    headless: true,
+    headless: false,
   });
 
   const browserPage = await browser.newPage();
@@ -141,5 +146,3 @@ async function startSafeBot () {
   await processPayment(browserPage);
   await browser.close();
 }
-
-startSafeBot();

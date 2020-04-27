@@ -1,3 +1,6 @@
+var backendScript = require('../backEnd/backend');
+var safeBackendScript = require('../backEnd/safeBackend');
+
 function clear(){
     document.getElementById("Fname").value= ""
     document.getElementById("Lname").value= ""
@@ -18,6 +21,50 @@ function clear(){
     document.getElementById("delay").value= ""
     document.getElementById("color").value= ""
     document.getElementById("size").value= "n/a"
+}
+
+function getInputValues(){
+    let firstName = document.getElementById("Fname").value;
+    let lastName = document.getElementById("Lname").value;
+    let phone = document.getElementById("Phone").value;
+    let email = document.getElementById("Email").value;
+    let address = document.getElementById("Saddress").value;
+    let zip = document.getElementById("Zip").value;
+    let country = document.getElementById("country").value;
+    let state = document.getElementById("state").value;
+    let cardtype = document.getElementById("cardtype").value;
+    let cardName = document.getElementById("Cname").value;
+    let cardNumber = document.getElementById("Cnumber").value;
+    let cvv = document.getElementById("CVV").value;
+    let cardMonth = document.getElementById("cardmonth").value;
+    let cardYear = document.getElementById("cardyear").value;
+    let category = document.getElementById("category").value;
+    let keyWords = document.getElementById("kword").value;
+    let delay = document.getElementById("delay").value;
+    let color = document.getElementById("color").value;
+    let size = document.getElementById("size").value;
+
+    return inputDict = {
+        firstName,
+        lastName,
+        phone,
+        email,
+        address,
+        zip,
+        country,
+        state,
+        cardtype,
+        cardName,
+        cardNumber,
+        cvv,
+        cardMonth,
+        cardYear,
+        category,
+        keyWords,
+        delay,
+        color,
+        size
+    };
 }
 
 function test(){
@@ -46,9 +93,17 @@ function TestButton(){
     console.log("hello");
 }
 
+function updateTaskStatus(message){
+    document.getElementById("taskStatus").value += `\n ${message}`;
+}
+
 function storeRecaptchaResponse(){
     let recaptchaResponse = document.getElementById("g-recaptcha-response").value;
-    document.getElementById("taskStatus").value = recaptchaResponse;
+    updateTaskStatus(recaptchaResponse);
     grecaptcha.reset();
     return recaptchaResponse;
+}
+
+module.exports = {
+    getInputValues: getInputValues
 }

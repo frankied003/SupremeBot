@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 var productSearch = require('./productSearch');
 
-const DELAY = 1500;
+const DELAY = 500;
 
 // helper functions
 const isElementVisible = async (page, selector) => {
@@ -107,7 +107,7 @@ const checkout = async (page) => {
 }
 
 const processPayment = async (page) => {
-  wait(100);
+  await wait(1000);
   let checkoutProcessingVisible = await isElementVisible(page, '#checkout-loading-message > span > span');
 
   // waits for payment to go through

@@ -146,3 +146,7 @@ async function startSafeBot () {
   await processPayment(browserPage);
   await browser.close();
 }
+
+module.exports = {
+  startSafeBot:startSafeBot
+}

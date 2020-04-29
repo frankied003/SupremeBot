@@ -1,5 +1,5 @@
 var backendScript = require('../backEnd/backend');
-var safeBackendScript = require('../backEnd/safeBackend');
+// var safeBackendScript = require('../backEnd/safeBackend');
 
 function clear(){
     document.getElementById("Fname").value= ""
@@ -129,7 +129,8 @@ function test(){
 function startBot(){
     let botOption = document.getElementsByClassName("bot-option")[0];
     if (botOption.value === "safe"){
-        safeBackendScript.startSafeBot();
+        // safeBackendScript.startSafeBot();
+        console.log("Hello");
     }
     else {
         backendScript.startFastBot();
@@ -149,5 +150,13 @@ function storeRecaptchaResponse(){
 }
 
 module.exports = {
-    getInputValues: getInputValues
+    test: test,
+    startBot: startBot,
+    storeRecaptchaResponse: storeRecaptchaResponse,
+    updateTaskStatus: updateTaskStatus
 }
+
+window.test = test;
+window.startBot = startBot;
+window.storeRecaptchaResponse = storeRecaptchaResponse;
+window.updateTaskStatus = updateTaskStatus;

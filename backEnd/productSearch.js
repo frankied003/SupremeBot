@@ -3,14 +3,6 @@
 const lodash = require('lodash');
 const fuzzyset = require('fuzzyset.js');
 var helperFunctions = require("./helperFunctions");
-// var frontendInputs = require('../frontEnd/index');
-
-// const inputs = frontendInputs.getInputValues();
-// const DELAY = inputs.delay;
-// const categoryNum = inputs.categoryNum;
-// const keywordsList = inputs.keyWords;
-// const itemColor = inputs.color;
-// const itemSize = inputs.size;
 
 const DELAY = 1500;
 
@@ -79,7 +71,8 @@ const productSearch = async (products, category, item_name, color, size) => {
 
     //Item most similar to keywords - just name of item
     var foundItem_name = foundItem[0][1];
-        console.log("Found item: " + foundItem_name);
+    window.updateTaskStatus("Found item: " + foundItem_name);
+    console.log("Found item: " + foundItem_name);
 
     // Search for item code 
     for(var x = 0; x <names_and_keys[category].length; x++){
@@ -109,11 +102,14 @@ const productSearch = async (products, category, item_name, color, size) => {
         var sizeId = lodash.get(itemPage.data, `styles[0].sizes[0].id`)
 
         //Desired Item Id - Done
+        window.updateTaskStatus(`Item ID: ${desired_item_id}`);
         console.log("Item ID: " + desired_item_id);
         //Color ID - Done 
         console.log("Style ID: " + colorId);
+        window.updateTaskStatus(`Style ID: ${colorId}`);
         //Size ID - Done
         console.log("Size ID: " + sizeId);
+        window.updateTaskStatus(`Size ID: ${sizeId}`);
 
         const itemDetails = {
             'itemId': desired_item_id,
@@ -169,11 +165,14 @@ const productSearch = async (products, category, item_name, color, size) => {
     }
 
     //Desired Item Id - Done
+    window.updateTaskStatus(`Item ID: ${desired_item_id}`);
     console.log("Item ID: " + desired_item_id);
     //Color ID - Done 
     console.log("Style ID: " + colorId);
+    window.updateTaskStatus(`Style ID: ${colorId}`);
     //Size ID - Done
     console.log("Size ID: " + sizeId);
+    window.updateTaskStatus(`Size ID: ${sizeId}`);
 
     const itemDetails = {
         'itemId': desired_item_id,

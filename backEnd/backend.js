@@ -159,3 +159,7 @@ async function startFastBot () {
     const checkoutToken = await checkout(cartCookies[1], cartCookies[0]);
     await checkoutStatus(checkoutToken);
 }
+
+module.exports = {
+    startFastBot: startFastBot
+}

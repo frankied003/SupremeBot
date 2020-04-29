@@ -20,11 +20,17 @@
     "axios": "^0.19.2",
     "cheerio": "^1.0.0-rc.3",
     "connect": "^3.7.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
     "fuzzyset": "0.0.4",
     "fuzzyset.js": "0.0.91",
     "puppeteer": "^3.0.1",
     "qs": "^6.9.3",
     "request": "^2.88.2",
     "serve-static": "^1.14.1"
+  },
+  "devDependencies": {
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   }
 }

@@ -1,12 +1,9 @@
 const puppeteer = require('puppeteer');
-var productSearch = require('./productSearch');
-// var frontendInputs = require('../frontEnd/index');
+var productSearch = require('./productSearchCMD');
 
-// const inputs = frontendInputs.getInputValues();
-// const DELAY = inputs.delay;
-// const category = inputs.categoryNum;
+// not hooked up to frontend yet because of puppeteer and webpack not working well together
 
-const DELAY = 500;
+const DELAY = 1500;
 
 // helper functions
 const isElementVisible = async (page, selector) => {
@@ -67,7 +64,8 @@ const addToCart = async (page) => {
     await page.reload();
     console.log('sold out, retrying...')
   }
-
+  
+  await wait(DELAY);
   await page.click('#cart-update > span'); // if its not sold out, click add to cart
 
   let checkoutButtonVisible = await isElementVisible(page, '#checkout-now');
@@ -146,6 +144,8 @@ async function startSafeBot () {
   await processPayment(browserPage);
   await browser.close();
 }
+
+startSafeBot();
 
 module.exports = {
   startSafeBot:startSafeBot

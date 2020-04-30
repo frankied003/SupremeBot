@@ -1,27 +1,32 @@
 var backendScript = require('../backEnd/backend');
 // var safeBackendScript = require('../backEnd/safeBackend');
 
-function clear(){
-    document.getElementById("Fname").value= ""
-    document.getElementById("Lname").value= ""
-    document.getElementById("Phone").value= ""
-    document.getElementById("Email").value= ""
-    document.getElementById("Saddress").value= ""
-    document.getElementById("Zip").value= ""
-    document.getElementById("country").value= "- country -"
-    document.getElementById("state").value= "- state -"
-    document.getElementById("cardtype").value= "- card type -"
-    document.getElementById("Cname").value= ""
-    document.getElementById("Cnumber").value= ""
-    document.getElementById("CVV").value= ""
-    document.getElementById("cardmonth").value= ""
-    document.getElementById("cardyear").value= ""
-    document.getElementById("category").value= "- category -"
-    document.getElementById("kword").value= ""
-    document.getElementById("delay").value= ""
-    document.getElementById("color").value= ""
-    document.getElementById("size").value= "n/a"
-}
+document.addEventListener("DOMContentLoaded", function(event) {
+    console.log("DOM fully loaded and parsed");
+    //Your code to bind event handler
+
+    document.getElementById("clearButton").onclick = function (){
+        document.getElementById("Fname").value= ""
+        document.getElementById("Lname").value= ""
+        document.getElementById("Phone").value= ""
+        document.getElementById("Email").value= ""
+        document.getElementById("Saddress").value= ""
+        document.getElementById("Zip").value= ""
+        document.getElementById("country").value= "- country -"
+        document.getElementById("state").value= "- state -"
+        document.getElementById("cardtype").value= "- card type -"
+        document.getElementById("Cname").value= ""
+        document.getElementById("Cnumber").value= ""
+        document.getElementById("CVV").value= ""
+        document.getElementById("cardmonth").value= ""
+        document.getElementById("cardyear").value= ""
+        document.getElementById("category").value= "- category -"
+        document.getElementById("kword").value= ""
+        document.getElementById("delay").value= ""
+        document.getElementById("color").value= ""
+        document.getElementById("size").value= "n/a"
+    }
+});
 
 function getInputValues(){
     let firstName = document.getElementById("Fname").value;

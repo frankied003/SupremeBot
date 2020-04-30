@@ -22,7 +22,7 @@ const wait = async (delay) => {
 
 
 // supreme botting functions
-const generateSupremeBrowser = async (page) => {
+const generateSupremeBrowser = async (page,category,keywords,color,size) => {
 
   let itemFound = false;
     let productFoundInfo;
@@ -75,7 +75,7 @@ const addToCart = async (page) => {
   }
 }
 
-const checkout = async (page) => {
+const checkout = async (page, userInfo) => {
   await page.click('#checkout-now'); // click checkout now after adding to cart is done
   console.log("Added to cart, going to checkout...");
 
@@ -89,28 +89,28 @@ const checkout = async (page) => {
   console.log("Checkout loaded, filling payment...");
   
   // filling in billing
-  await page.$eval('#order_bn', el => el.value = `Frank DiGiacomo`);
-  await page.$eval('#order_email', el => el.value = `blahblah12312313@gmail.com`);
-  await page.$eval('#order_tel', el => el.value = `914-123-1234`);
-  await page.$eval('#order_billing_address', el => el.value = `123 Bobby lane`);
-  await page.$eval('#order_billing_address_2', el => el.value = ``);
-  await page.$eval('#obz', el => el.value = `12345`);
-  await page.$eval('#order_billing_city', el => el.value = `blah`);
-  await page.select('#order_billing_state', `NY`);
-  await page.select('#order_billing_country', 'USA');
-  await page.$eval('#cnid', el => el.value = `4941605903969210`); // this is a prepaid card with like 30 cents on it
-  await page.select('#credit_card_month', `04`);
-  await page.select('#credit_card_year', `2025`);
-  await page.$eval('#vvv-container > input[type=tel]', el => el.value = `123`);
+  await page.$eval('#order_bn', (el,value) => el.value = value, userInfo.name);
+  await page.$eval('#order_email', (el,value) => el.value = value, userInfo.email);
+  await page.$eval('#order_tel', (el,value) => el.value = value, userInfo.phoneNumber);
+  await page.$eval('#order_billing_address', (el,value) => el.value = value, userInfo.billingAddress1);
+  await page.$eval('#order_billing_address_2', (el,value) => el.value = value, userInfo.billingAddress2);
+  await page.$eval('#obz', (el,value) => el.value = value, userInfo.zipCode);
+  await page.$eval('#order_billing_city',(el,value) => el.value = value, userInfo.billingCity);
+  await page.select('#order_billing_state', userInfo.billingState);
+  await page.select('#order_billing_country', userInfo.billingCountry);
+  await page.$eval('#cnid', (el,value) => el.value = value, userInfo.creditCardNum); // this is a prepaid card with like 30 cents on it
+  await page.select('#credit_card_month', userInfo.creditCardMonth);
+  await page.select('#credit_card_year', userInfo.creditCardYear);
+  await page.$eval('#vvv-container > input[type=tel]',(el,value) => el.value = value, userInfo.cvv);
   await page.click("#order_terms");
-  await page.$eval('#g-recaptcha-response', el => el.value = `ff432r32x3rcc4r3r243rc4r43r234r`);
+  await page.$eval('#g-recaptcha-response', (el,value) => el.value = value, userInfo.gRecaptchaRes);
   await wait(DELAY); // wait a little before button is clicked
   await page.click("#submit_button");
   await page.waitForSelector('#checkout-loading-message > span > span'); // let payment processing page load before checking
 }
 
 const processPayment = async (page) => {
-  await wait(1000);
+  await wait(2000);
   let checkoutProcessingVisible = await isElementVisible(page, '#checkout-loading-message > span > span');
 
   // waits for payment to go through
@@ -130,22 +130,39 @@ const processPayment = async (page) => {
   }
 }
 
-async function startSafeBot () {
+async function startSafeBot (headlessBool) {
 
   const browser = await puppeteer.launch({ 
-    headless: false,
+    headless: headlessBool,
   });
 
   const browserPage = await browser.newPage();
 
-  await generateSupremeBrowser(browserPage);
+  const userData = {
+    'name': 'frank digiacomo',
+    'email': 'frankied324234234@gmail.com',
+    'phoneNumber': '914-123-1234',
+    'billingAddress1': '123 testing lane',
+    'billingAddress2': '',
+    'zipCode': '12345',
+    'billingCity': 'test',
+    'billingState': 'NY',
+    'billingCountry': 'USA',
+    'creditCardNum': '4941605903969210',
+    'creditCardMonth': '04',
+    'creditCardYear': '2025',
+    'cvv': '123',
+    'gRecaptchaRes': "3e232d32cf4d34343d434132d4124c234d24"
+  };
+
+  await generateSupremeBrowser(browserPage,1,"beaded","Black","N/A");
   await addToCart(browserPage);
-  await checkout(browserPage);
+  await checkout(browserPage, userData);
   await processPayment(browserPage);
   await browser.close();
 }
 
-startSafeBot();
+startSafeBot(headless = true);
 
 module.exports = {
   startSafeBot:startSafeBot

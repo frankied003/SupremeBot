@@ -22,6 +22,10 @@ const addItemToCart = async (itemId, sizeId, styleId) => {
             "Failed to add item to cart, retrying...");
     
         if(addToCart.data.length > 0){
+            if(addToCart.headers["set-cookie"] == null){
+                window.updateTaskStatus("no cookies are being passed, ending program");
+                return false
+            }
             let allCookies = addToCart.headers["set-cookie"].join("; ");
                 
             let pureCookie = addToCart.headers["set-cookie"][2];

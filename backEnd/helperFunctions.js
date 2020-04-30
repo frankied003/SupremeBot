@@ -8,7 +8,7 @@ const RETRY_DELAY = 1000;
 // creating a simple axios session so all cookies are stored throughout the checkout process
 const session = axios.create({
     baseURL: `http://botapi.supremenewyork.com:8050`,
-    timeout: 15000
+    timeout: 10000
     // headers: {
     //     'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
     //     'x-requested-with': 'XMLHttpRequest',

@@ -162,7 +162,7 @@ async function startSafeBot (headlessBool) {
   await browser.close();
 }
 
-startSafeBot(headless = true);
+startSafeBot(headless = false);
 
 module.exports = {
   startSafeBot:startSafeBot

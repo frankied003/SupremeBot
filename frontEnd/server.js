@@ -62,8 +62,8 @@ app.post('/shop/:itemId/add.json', (req, res) => {
 });
 
 const PORT = process.env.PORT || 8050;
-app.listen(PORT, () => console.log(`listening on ${PORT}`));
+app.listen(PORT, () => console.log(`Express server listening on ${PORT}`));
 
 connect()
     .use(serveStatic('../frontend'))
-    .listen(8000, () => console.log('Server running on 8000...'));
+    .listen(8000, () => console.log('Frontend server listening on 8000...'));

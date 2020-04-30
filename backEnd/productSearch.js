@@ -65,6 +65,7 @@ const productSearch = async (products, category, item_name, color, size) => {
 
 
     if(foundItem === null){
+        window.updateTaskStatus('No item found, retrying...');
         console.log('No item found, retrying...')
         return null;
     }

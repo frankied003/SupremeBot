@@ -40,6 +40,7 @@ const addItemToCart = async (itemId, sizeId, styleId) => {
             return [allCookies, pureCookie];
         }
         else {
+            window.updateTaskStatus("Item is out of stock, retrying...");
             console.log("Item is out of stock, retrying...")
         }
     }
@@ -146,14 +147,14 @@ const checkoutStatus = async (slug) => {
 }
 
        
-async function startFastBot () {
+async function startFastBot (category, keywords, color, size) {
     let itemFound = false;
     let productFoundInfo;
 
     // if item is not found rerun
     while(!itemFound){
         const allProducts = await productSearch.getSupremeProducts();
-        productFoundInfo = await productSearch.productSearch(allProducts, 1, "beaded", "Black", "random");
+        productFoundInfo = await productSearch.productSearch(allProducts, category, keywords, color, size);
         if(productFoundInfo !== null){
             itemFound = true;
         }

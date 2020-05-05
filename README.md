@@ -20,10 +20,10 @@ Supreme bot is an automated checkout system that is built with Node.JS that is a
   The entire frontend is built in HTML/CSS/JavaScript as well as the library of Bootstrap mainly for the grid system.
   1. Personal Information - Fill out your address and payment information (NO INFORMATION WILL BE STORED, ONCE THE PAGE IS REFRESHED, FORM IS CLEARED)
   2. Product Information - This is the search section to locate products on supreme
-    1. Keywords - To find a product named "COVID-19 Box Logo Relief Tee" keywords should be entered as "covid tee" or "covid logo" (no commas necessary)
-    2. Category - Currently a category is required to successfuly locate a product (a box logo tee should be under T-Shirts)
-    3. Delays - This will be the delay to add to cart and checkout, a recommended delay is usually around 1500 ms
-    4. To select either safe mode or fast mode use the drop down
+      1. Keywords - To find a product named "COVID-19 Box Logo Relief Tee" keywords should be entered as "covid tee" or "covid logo" (no commas necessary)
+      2. Category - Currently a category is required to successfuly locate a product (a box logo tee should be under T-Shirts)
+      3. Delays - This will be the delay to add to cart and checkout, a recommended delay is usually around 1500 ms
+      4. To select either safe mode or fast mode use the drop down
     
  # Recaptcha
   1. Once the product is successfully added to cart, the bot will request a captcha to be solved since captcha bypass is patched for now. Once at checkout, the task status box will display a message saying captcha needed and that's when you should solve and submit, the bot will then continue the checkout proccess.

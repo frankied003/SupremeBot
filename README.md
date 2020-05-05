@@ -2,7 +2,7 @@
 Supreme bot is an automated checkout system that is built with Node.JS that is able to purchase any Supreme product
 
 # Setup
-  1. Edit your host file to include botapi.supremenewyork.com, link for guidance - https://support.rackspace.com/how-to/modify-your-hosts-file/ (this step is a necessity for google recaptcha to work)
+  1. Edit your host file to include "127.0.0.1 botapi.supremenewyork.com", link for guidance - https://support.rackspace.com/how-to/modify-your-hosts-file/ (this step is a necessity for google recaptcha to work)
   2. Clone this repo and download it onto your desktop, name it something like SupremeBot.
   3. CD into SupremeBot and type in 'npm install' - This will install all the libraries needed
   4. CD into frontend and type in 'node server.js' this will start the backend server and the frontend server. The frontend server will be running on http://botapi.supremenewyork.com - if its working, go to chrome, and type in that link, the frontend should be there.

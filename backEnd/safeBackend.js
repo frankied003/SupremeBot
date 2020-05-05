@@ -16,6 +16,7 @@ const isElementVisible = async (page, selector) => {
   return visible;
 };
 
+// wait function for delays
 const wait = async (delay) => {
   await new Promise(function(resolve) {setTimeout(resolve, delay)});
 }
@@ -28,7 +29,7 @@ const generateSupremeBrowser = async (page,category,keywords,color,size) => {
     let productFoundInfo;
     while(!itemFound){
         const allProducts = await productSearch.getSupremeProducts();
-        productFoundInfo = await productSearch.productSearch(allProducts, 1, "beaded", "Black", "N/A");
+        productFoundInfo = await productSearch.productSearch(allProducts, category, keywords, color, size);
         if(productFoundInfo !== null){
             itemFound = true;
         }
@@ -42,7 +43,7 @@ const generateSupremeBrowser = async (page,category,keywords,color,size) => {
   await page.setViewport({ width: 375, height: 812 });
 
   // Instructs the blank page to navigate a URL
-  console.log("Opening safe browser");
+  console.log('Opening safe browser');
   await page.goto(`https://www.supremenewyork.com/mobile#products/${itemId}/${styleId}`);
 
   await page.waitForSelector('.cart-button');
@@ -77,7 +78,7 @@ const addToCart = async (page) => {
 
 const checkout = async (page, userInfo) => {
   await page.click('#checkout-now'); // click checkout now after adding to cart is done
-  console.log("Added to cart, going to checkout...");
+  console.log('Added to cart, going to checkout...');
 
   // waits for form to load
   let checkoutFormVisible = await isElementVisible(page, '#order_bn');
@@ -86,7 +87,7 @@ const checkout = async (page, userInfo) => {
     checkoutFormVisible = await isElementVisible(page, '#order_bn');
   }
 
-  console.log("Checkout loaded, filling payment...");
+  console.log('Checkout loaded, filling payment...');
   
   // filling in billing
   await page.$eval('#order_bn', (el,value) => el.value = value, userInfo.name);
@@ -102,10 +103,10 @@ const checkout = async (page, userInfo) => {
   await page.select('#credit_card_month', userInfo.creditCardMonth);
   await page.select('#credit_card_year', userInfo.creditCardYear);
   await page.$eval('#vvv-container > input[type=tel]',(el,value) => el.value = value, userInfo.cvv);
-  await page.click("#order_terms");
+  await page.click('#order_terms');
   await page.$eval('#g-recaptcha-response', (el,value) => el.value = value, userInfo.gRecaptchaRes);
   await wait(DELAY); // wait a little before button is clicked
-  await page.click("#submit_button");
+  await page.click('#submit_button');
   await page.waitForSelector('#checkout-loading-message > span > span'); // let payment processing page load before checking
 }
 
@@ -114,19 +115,19 @@ const processPayment = async (page) => {
   let checkoutProcessingVisible = await isElementVisible(page, '#checkout-loading-message > span > span');
 
   // waits for payment to go through
-  console.log("Payment processing, please wait...");
+  console.log('Payment processing, please wait...');
   while (checkoutProcessingVisible) {
     await wait(DELAY);
     checkoutProcessingVisible = await isElementVisible(page, '#checkout-loading-message > span > span');
   }
 
-  const paymentFailed = page.url().includes("chargeError"); // check if payment failed and returns true or false
+  const paymentFailed = page.url().includes('chargeError'); // check if payment failed and returns true or false
 
   if(paymentFailed){
-    console.log("Payment declined");
+    console.log('Payment declined');
   }
   else{
-    console.log("Payment successful, check your email");
+    console.log('Payment successful, check your email');
   }
 }
 
@@ -138,6 +139,7 @@ async function startSafeBot (headlessBool) {
 
   const browserPage = await browser.newPage();
 
+  // enter personal information here
   const userData = {
     'name': 'frank digiacomo',
     'email': 'frankied324234234@gmail.com',
@@ -155,7 +157,7 @@ async function startSafeBot (headlessBool) {
     'gRecaptchaRes': "3e232d32cf4d34343d434132d4124c234d24"
   };
 
-  await generateSupremeBrowser(browserPage,1,"beaded","Black","N/A");
+  await generateSupremeBrowser(browserPage,1,'beaded','Black','N/A'); // enter keywords here (browserPage, keywords, color, size)
   await addToCart(browserPage);
   await checkout(browserPage, userData);
   await processPayment(browserPage);

@@ -1,8 +1,8 @@
 var connect = require('connect');
 var serveStatic = require('serve-static');
-
 const express = require('express');
 const request = require('request');
+
 const cors = require('cors');
 
 const app = express();
@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
     }
   )
 });
+
 app.get('/mobile_stock.json', (req, res) => {
   request(
     { url: 'https://supremenewyork.com/mobile_stock.json' },
@@ -36,6 +37,7 @@ app.get('/mobile_stock.json', (req, res) => {
     }
   )
 });
+
 app.get('/shop/:jsonfilename', (req, res) => {
   let jsonName = req.params.jsonfilename;
   request(
@@ -48,6 +50,7 @@ app.get('/shop/:jsonfilename', (req, res) => {
     }
   )
 });
+
 app.post('/shop/:itemId/add.json', (req, res) => {
   let item = req.params.itemId;
   request(
@@ -61,9 +64,11 @@ app.post('/shop/:itemId/add.json', (req, res) => {
   )
 });
 
+// backend server
 const PORT = process.env.PORT || 8050;
 app.listen(PORT, () => console.log(`Express server listening on ${PORT}`));
 
+// fronted server
 connect()
     .use(serveStatic('../frontend'))
     .listen(8000, () => console.log('Frontend server listening on 8000...'));

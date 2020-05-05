@@ -9,7 +9,7 @@ const addItemToCart = async (itemId, sizeId, styleId) => {
     const postData = {
         "st": styleId,
         "s": sizeId,
-        "qty": "1"
+        "qty": '1'
     };
 
     while(true){
@@ -18,18 +18,18 @@ const addItemToCart = async (itemId, sizeId, styleId) => {
             postUrl, 
             postData,
             DELAY,
-            "Adding item to cart...",
-            "Failed to add item to cart, retrying...");
+            'Adding item to cart...',
+            'Failed to add item to cart, retrying...');
     
         if(addToCart.data.length > 0){
-            if(addToCart.headers["set-cookie"] == null){
-                window.updateTaskStatus("no cookies are being passed, ending program");
+            if(addToCart.headers['set-cookie'] == null){
+                window.updateTaskStatus('no cookies are being passed, ending program');
                 return false
             }
-            let allCookies = addToCart.headers["set-cookie"].join("; ");
+            let allCookies = addToCart.headers['set-cookie'].join('; ');
                 
-            let pureCookie = addToCart.headers["set-cookie"][2];
-            pureCookie = pureCookie.split("=")[1].split(";")[0]; // this returns the pure_cart cookie value
+            let pureCookie = addToCart.headers['set-cookie'][2];
+            pureCookie = pureCookie.split('=')[1].split(';')[0]; // this returns the pure_cart cookie value
             
             // let ticketCookie = addToCart.headers["set-cookie"][4]; // return the ticket cookie if there is one
             // ticketCookie = ticketCookie.split(";")[0];
@@ -40,8 +40,8 @@ const addItemToCart = async (itemId, sizeId, styleId) => {
             return [allCookies, pureCookie];
         }
         else {
-            window.updateTaskStatus("Item is out of stock, retrying...");
-            console.log("Item is out of stock, retrying...")
+            window.updateTaskStatus('Item is out of stock, retrying...');
+            console.log('Item is out of stock, retrying...')
         }
     }
 }
@@ -53,7 +53,7 @@ const checkout = async (cookie, addToCartCookies) => {
     const checkoutLink = `https://www.supremenewyork.com/checkout/totals_mobile.js?order%5Bbilling_country%5D=USA&cookie-sub=${checkoutPureCartCookie}&order%5Bbilling_state%5D=&order%5Bbilling_zip%5D=&mobile=true`;
 
     // const checkoutLink = "/mobile/#checkout";
-    const checkoutEndpoint = "/checkout.json";
+    const checkoutEndpoint = '/checkout.json';
 
     let now = new Date();
     let epochTime = now.getTime();
@@ -67,10 +67,10 @@ const checkout = async (cookie, addToCartCookies) => {
             'cookie': firstCookies,
         }, 
         DELAY, 
-        "Sending payment details soon...", 
-        "Error accessing checkout page, retrying...");
+        'Sending payment details soon...', 
+        'Error accessing checkout page, retrying...');
 
-    let checkoutPageCookies = checkoutPage.headers["set-cookie"].join(";");
+    let checkoutPageCookies = checkoutPage.headers['set-cookie'].join(';');
     
     // checkout data
     const checkoutData = {
@@ -107,8 +107,8 @@ const checkout = async (cookie, addToCartCookies) => {
             'cookie': checkoutPageCookies
         },
         DELAY,
-        "Sent payment details",
-        "Error sending checkout data"
+        'Sent payment details',
+        'Error sending checkout data'
     );
 
     const slug = completeCheckout.data.slug;
@@ -118,14 +118,14 @@ const checkout = async (cookie, addToCartCookies) => {
 const checkoutStatus = async (slug) => {
 
     if (slug == null){
-        console.log("Checkout failed, no cookies");
+        console.log('Checkout failed, no cookies');
         return false
     }
 
     const checkoutStatusLink = `/checkout/${slug}/status.json`;
     let statusComplete = false;
 
-    console.log("Checking status, please wait (slug token: " + slug + ")");
+    console.log('Checking status, please wait (slug token: ' + slug + ')');
 
     while(!statusComplete) {
 
@@ -133,14 +133,14 @@ const checkoutStatus = async (slug) => {
             checkoutStatusLink, 
             500, 
             null, 
-            "Failed to check status of payment");
+            'Failed to check status of payment');
 
-        if(status.data.status == "failed") {
-            console.log("Payment failed or declined");
+        if(status.data.status == 'failed') {
+            console.log('Payment failed or declined');
             statusComplete = true;
         }
-        else if(status.data.status == "paid") {
-            console.log("Payment completed, check your bank for charge or email!");
+        else if(status.data.status == 'paid') {
+            console.log('Payment completed, check your bank for charge or email!');
             statusComplete = true;
         }
     }

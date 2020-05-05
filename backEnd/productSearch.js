@@ -50,7 +50,6 @@ const productSearch = async (products, category, item_name, color, size) => {
            
     }
     //Prints out dictionary of items in category. Ex. names_and_keys[0] prints out the bags dictionary which has all the bags in it with the ids.
-    // console.log(names_and_keys[category]);
 
     //We want an array of just the names of the products in the category, ie "Backpack", "Shoulder Bag" in Bags category
     var just_names = [];
@@ -89,12 +88,12 @@ const productSearch = async (products, category, item_name, color, size) => {
     const itemPage = await helperFunctions.redirectTo(
         itemLink, 
         DELAY, 
-        "Successfully connected to product page!", 
-        "Error accessing Supreme site, retrying...");
+        'Successfully connected to product page!', 
+        'Error accessing Supreme site, retrying...');
 
     //console.log(itemPage.data);  this is for the product page parsing for sizes and colors
 
-    if(color === "random" && size === "random") {
+    if(color === 'random' && size === 'random') {
         
         //First Colorway
         var colorId = lodash.get(itemPage.data, `styles[0].id`);
@@ -104,12 +103,14 @@ const productSearch = async (products, category, item_name, color, size) => {
 
         //Desired Item Id - Done
         window.updateTaskStatus(`Item ID: ${desired_item_id}`);
-        console.log("Item ID: " + desired_item_id);
+        console.log('Item ID: ' + desired_item_id);
+
         //Color ID - Done 
-        console.log("Style ID: " + colorId);
+        console.log('Style ID: ' + colorId);
         window.updateTaskStatus(`Style ID: ${colorId}`);
+        
         //Size ID - Done
-        console.log("Size ID: " + sizeId);
+        console.log('Size ID: ' + sizeId);
         window.updateTaskStatus(`Size ID: ${sizeId}`);
 
         const itemDetails = {
@@ -121,7 +122,7 @@ const productSearch = async (products, category, item_name, color, size) => {
         return itemDetails;
     }
 
-    else if(color === "random"){
+    else if(color === 'random'){
         //First Colorway
         var colorId = lodash.get(itemPage.data, `styles[0].id`);
 
@@ -134,7 +135,7 @@ const productSearch = async (products, category, item_name, color, size) => {
         }
     }
 
-    else if(size === "random"){
+    else if(size === 'random'){
 
         for(var product = 0; product < Object.keys(itemPage.data.styles).length; product++){
             if(color === lodash.get(itemPage.data, `styles[${product}].name`)){
@@ -159,20 +160,22 @@ const productSearch = async (products, category, item_name, color, size) => {
     }
 
     if(colorId === null){
-        throw new Error("No color found, exiting proccess");
+        throw new Error('No color found, exiting proccess');
     }
     else if(sizeId === null){
-        throw new Error("No size found, exiting proccess");
+        throw new Error('No size found, exiting proccess');
     }
 
     //Desired Item Id - Done
     window.updateTaskStatus(`Item ID: ${desired_item_id}`);
-    console.log("Item ID: " + desired_item_id);
+    console.log('Item ID: ' + desired_item_id);
+
     //Color ID - Done 
-    console.log("Style ID: " + colorId);
+    console.log('Style ID: ' + colorId);
     window.updateTaskStatus(`Style ID: ${colorId}`);
+
     //Size ID - Done
-    console.log("Size ID: " + sizeId);
+    console.log('Size ID: ' + sizeId);
     window.updateTaskStatus(`Size ID: ${sizeId}`);
 
     const itemDetails = {
